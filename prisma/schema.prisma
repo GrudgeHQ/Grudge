@@ -1,0 +1,962 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  CAPTAIN
+  CO_CAPTAIN
+  COACH
+  COORDINATOR
+  MEMBER
+}
+
+enum AvailabilityStatus {
+  AVAILABLE
+  MAYBE
+  UNAVAILABLE
+}
+
+enum Sport {
+  SOCCER
+  BASKETBALL
+  BASEBALL
+  FOOTBALL
+  VOLLEYBALL
+  TENNIS
+  BADMINTON
+  RUGBY
+  HOCKEY
+  ICE_HOCKEY
+  FIELD_HOCKEY
+  LACROSSE
+  CRICKET
+  GOLF
+  SWIMMING
+  TRACK
+  CYCLING
+  BOXING
+  MMA
+  WRESTLING
+  TABLE_TENNIS
+  SQUASH
+  PICKLEBALL
+  HANDBALL
+  SKIING
+  SNOWBOARDING
+  SURFING
+  ROWING
+  SAILING
+  KAYAKING
+  BOWLING
+  CORNHOLE
+  DODGEBALL
+  KICKBALL
+  ULTIMATE_FRISBEE
+  WATER_POLO
+  POLO
+  PING_PONG
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  password      String? // hashed password (optional if using OAuth)
+  phone         String?
+  bio           String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  memberships               TeamMember[]
+  sentInvitations           Invitation[]         @relation("Inviter")
+  invitations               Invitation[]         @relation("Invitee")
+  messages                  ChatMessage[]
+  adminMessages             AdminChatMessage[]
+  createdPractices          Practice[]           @relation("PracticeCreatedBy")
+  proposedPractices         Practice[]           @relation("PracticeProposedBy")
+  practiceAttendance        PracticeAttendance[]
+  createdMatches            Match[]              @relation("MatchCreatedBy")
+  createdScrimmages         Scrimmage[]          @relation("ScrimmageCreatedBy")
+  createdLeagues            League[]             @relation("LeagueCreatedBy")
+  createdLeagueMatches      LeagueMatch[]        @relation("LeagueMatchCreatedBy")
+  leagueJoinRequests        LeagueJoinRequest[]
+  respondedJoinRequests     LeagueJoinRequest[]  @relation("LeagueJoinRequestRespondedBy")
+  teamJoinRequests          TeamJoinRequest[]
+  respondedTeamJoinRequests TeamJoinRequest[]    @relation("TeamJoinRequestRespondedBy")
+  notifications             Notification[]
+  availabilities            Availability[]
+  assignments               Assignment[]         @relation("AssignedTo")
+  assignedTasks             Assignment[]         @relation("AssignedBy")
+  auditLogs                 AuditLog[]
+  submittedScores           MatchScoreSubmission[] @relation("ScoreSubmittedBy")
+  confirmedScores           MatchScoreSubmission[] @relation("ScoreConfirmedBy")
+  seasonSubmittedScores     SeasonMatchScoreSubmission[] @relation("SeasonScoreSubmittedBy")
+  seasonConfirmedScores     SeasonMatchScoreSubmission[] @relation("SeasonScoreConfirmedBy")
+  createdProposals          MatchProposal[]        @relation("ProposalCreatedBy")
+  reviewedProposals         MatchProposal[]        @relation("ProposalReviewedBy")
+  seasonMatchAvailability   SeasonMatchAvailability[]
+  requestedEdits            MatchEditRequest[]     @relation("EditRequestedBy")
+  reviewedEdits             MatchEditRequest[]     @relation("EditReviewedBy")
+  createdTournaments        Tournament[]           @relation("TournamentCreatedBy")
+  createdSeasons            Season[]               @relation("SeasonCreatedBy")
+  createdSeasonMatches      SeasonMatch[]          @relation("SeasonMatchCreatedBy")
+
+  // NextAuth relations
+  accounts Account[]
+  sessions Session[]
+
+  // Performance indexes
+  @@index([email])
+  @@index([createdAt])
+}
+
+model Team {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  sport       Sport
+  inviteCode  String   @unique
+  password    String? // optional team password
+  description String?
+  website     String?
+  location    String?
+  foundedYear Int?
+  teamColors  Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members            TeamMember[]
+  matches            Match[]             @relation("TeamMatches")
+  opponentMatches    Match[]             @relation("OpponentMatches")
+  practices          Practice[]
+  scrimmages         Scrimmage[]
+  chats              ChatMessage[]
+  targetChats        ChatMessage[]       @relation("ChatMessageTarget")
+  adminChats         AdminChatMessage[]
+  leagues            LeagueTeam[]
+  leagueJoinRequests LeagueJoinRequest[]
+  teamJoinRequests   TeamJoinRequest[]
+  invitations        Invitation[]
+  leagueHomeMatches  LeagueMatch[]       @relation("LeagueHome")
+  leagueAwayMatches  LeagueMatch[]       @relation("LeagueAway")
+  notifications      Notification[]
+  auditLogs          AuditLog[]
+  submittedScores    MatchScoreSubmission[] @relation("ScoreSubmittingTeam")
+  confirmingScores   MatchScoreSubmission[] @relation("ScoreConfirmingTeam")
+  seasonSubmittedScores    SeasonMatchScoreSubmission[] @relation("SeasonScoreSubmittingTeam")
+  seasonConfirmingScores   SeasonMatchScoreSubmission[] @relation("SeasonScoreConfirmingTeam")
+  proposedMatches    MatchProposal[]        @relation("ProposingTeam")
+  opponentProposals  MatchProposal[]        @relation("OpponentTeam")
+  requestedEdits     MatchEditRequest[]     @relation("EditRequestingTeam")
+  tournamentTeams    TournamentTeam[]
+  seasonTeams        SeasonTeam[]
+  seasonHomeMatches  SeasonMatch[]          @relation("SeasonHomeMatches")
+  seasonAwayMatches  SeasonMatch[]          @relation("SeasonAwayMatches")
+  seasonStandings    SeasonStanding[]
+  seasonMatchAvailability SeasonMatchAvailability[]
+
+  // Performance indexes
+  @@index([sport])
+  @@index([createdAt])
+  @@index([inviteCode])
+}
+
+model TeamMember {
+  id       String   @id @default(cuid())
+  user     User     @relation(fields: [userId], references: [id])
+  userId   String
+  team     Team     @relation(fields: [teamId], references: [id])
+  teamId   String
+  role     Role     @default(MEMBER)
+  isAdmin  Boolean  @default(false)
+  joinedAt DateTime @default(now())
+
+  @@unique([userId, teamId])
+  @@index([userId])
+  @@index([teamId])
+  @@index([role])
+  @@index([isAdmin])
+}
+
+model Invitation {
+  id          String    @id @default(cuid())
+  code        String    @unique
+  password    String? // team-level password to join
+  team        Team      @relation(fields: [teamId], references: [id])
+  teamId      String
+  invitedBy   User?     @relation("Inviter", fields: [invitedById], references: [id])
+  invitedById String?
+  invitee     User?     @relation("Invitee", fields: [inviteeId], references: [id])
+  inviteeId   String?
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime?
+  accepted    Boolean   @default(false)
+}
+
+model Match {
+  id              String     @id @default(cuid())
+  team            Team       @relation("TeamMatches", fields: [teamId], references: [id])
+  teamId          String
+  opponentName    String?
+  opponentTeam    Team?      @relation("OpponentMatches", fields: [opponentTeamId], references: [id])
+  opponentTeamId  String?
+  scheduledAt     DateTime
+  location        String?
+  createdBy       User?      @relation("MatchCreatedBy", fields: [createdById], references: [id])
+  createdById     String?
+  homeScore       Int?
+  awayScore       Int?
+  requiredPlayers Int?
+  leagueMatchId   String?    @unique
+  matchType       MatchType  @default(TEAM_MATCH)
+  leagueId        String?    // Direct reference to league for league matches
+  createdAt       DateTime   @default(now())
+
+  availabilities Availability[]
+  assignments    Assignment[]
+  leagueMatch    LeagueMatch?   @relation("MatchToLeagueMatch")
+  league         League?        @relation(fields: [leagueId], references: [id])
+  scoreSubmissions MatchScoreSubmission[]
+  editRequests   MatchEditRequest[]
+
+  // Performance indexes
+  @@index([scheduledAt])
+  @@index([teamId])
+  @@index([opponentTeamId])
+  @@index([leagueId])
+  @@index([matchType])
+  @@index([createdAt])
+}
+
+model Availability {
+  id        String             @id @default(cuid())
+  match     Match              @relation(fields: [matchId], references: [id])
+  matchId   String
+  user      User               @relation(fields: [userId], references: [id])
+  userId    String
+  status    AvailabilityStatus @default(MAYBE)
+  notes     String?
+  updatedAt DateTime           @updatedAt
+
+  @@unique([matchId, userId])
+}
+
+model Assignment {
+  id           String    @id @default(cuid())
+  match        Match     @relation(fields: [matchId], references: [id])
+  matchId      String
+  user         User      @relation("AssignedTo", fields: [userId], references: [id])
+  userId       String
+  assignedBy   User?     @relation("AssignedBy", fields: [assignedById], references: [id])
+  assignedById String?
+  assignedAt   DateTime  @default(now())
+  confirmed    Boolean   @default(false)
+  confirmedAt  DateTime?
+
+  @@unique([matchId, userId])
+}
+
+enum AttendanceStatus {
+  GOING
+  NOT_GOING
+}
+
+enum MatchType {
+  TEAM_MATCH     // Created by team admin, head-to-head with another team
+  LEAGUE_MATCH   // Created by league manager, scheduled for league teams
+}
+
+enum MatchProposalStatus {
+  PENDING    // Waiting for league manager approval
+  APPROVED   // Approved by league manager, match created
+  DENIED     // Denied by league manager
+  CANCELLED  // Cancelled by proposing team
+}
+
+enum MatchEditStatus {
+  PENDING    // Waiting for league manager approval
+  APPROVED   // Approved by league manager, changes applied
+  DENIED     // Denied by league manager
+  CANCELLED  // Cancelled by requesting team
+}
+
+enum SeasonStatus {
+  DRAFT      // Season created but not started
+  ACTIVE     // Season is currently running
+  COMPLETED  // Season finished
+  ARCHIVED   // Season completed and archived
+}
+
+enum SeasonScheduleType {
+  ROUND_ROBIN     // Each team plays each other X times
+  FIXED_GAMES     // Each team plays X total games (randomized opponents)
+}
+
+enum SeasonMatchStatus {
+  SCHEDULED   // Match is scheduled
+  COMPLETED   // Match has been played and scored
+  POSTPONED   // Match has been postponed
+  CANCELLED   // Match was cancelled
+}
+
+model Practice {
+  id           String   @id @default(cuid())
+  team         Team     @relation(fields: [teamId], references: [id])
+  teamId       String
+  scheduledAt  DateTime
+  location     String?
+  createdBy    User?    @relation("PracticeCreatedBy", fields: [createdById], references: [id])
+  createdById  String?
+  approved     Boolean  @default(false)
+  proposedBy   User?    @relation("PracticeProposedBy", fields: [proposedById], references: [id])
+  proposedById String?
+  createdAt    DateTime @default(now())
+
+  attendance PracticeAttendance[]
+}
+
+model PracticeAttendance {
+  id         String           @id @default(cuid())
+  practice   Practice         @relation(fields: [practiceId], references: [id], onDelete: Cascade)
+  practiceId String
+  user       User             @relation(fields: [userId], references: [id])
+  userId     String
+  status     AttendanceStatus @default(GOING)
+  updatedAt  DateTime         @updatedAt
+
+  @@unique([practiceId, userId])
+}
+
+model Scrimmage {
+  id             String   @id @default(cuid())
+  team           Team     @relation(fields: [teamId], references: [id])
+  teamId         String
+  name           String?
+  rounds         Int      @default(1)
+  playersPerTeam Int      @default(2)
+  timedRounds    Boolean  @default(false)
+  roundDuration  Int? // Duration in minutes if timed
+  settings       Json?
+  createdBy      User?    @relation("ScrimmageCreatedBy", fields: [createdById], references: [id])
+  createdById    String?
+  createdAt      DateTime @default(now())
+
+  participants    ScrimmageParticipant[]
+  scrimmageRounds ScrimmageRound[]
+}
+
+model ScrimmageParticipant {
+  id          String    @id @default(cuid())
+  scrimmage   Scrimmage @relation(fields: [scrimmageId], references: [id], onDelete: Cascade)
+  scrimmageId String
+  userId      String
+  userName    String // Store name for display
+
+  @@unique([scrimmageId, userId])
+}
+
+model ScrimmageRound {
+  id          String    @id @default(cuid())
+  scrimmage   Scrimmage @relation(fields: [scrimmageId], references: [id], onDelete: Cascade)
+  scrimmageId String
+  roundNumber Int
+  matchups    Json // Store array of matchups: [{team1: [userId1, userId2], team2: [userId3, userId4]}, ...]
+  sittingOut  Json? // Array of userIds sitting out this round
+  createdAt   DateTime  @default(now())
+
+  @@unique([scrimmageId, roundNumber])
+}
+
+model League {
+  id         String   @id @default(cuid())
+  name       String
+  sport      Sport
+  inviteCode String   @unique
+  creator    User?    @relation("LeagueCreatedBy", fields: [creatorId], references: [id])
+  creatorId  String?
+  createdAt  DateTime @default(now())
+
+  teams        LeagueTeam[]
+  joinRequests LeagueJoinRequest[]
+  matches      LeagueMatch[]
+  messages     ChatMessage[]
+  teamMatches  Match[]      // League matches visible to teams
+  matchProposals MatchProposal[]
+  tournaments  Tournament[]
+  seasons      Season[]
+
+  // Performance indexes
+  @@index([sport])
+  @@index([createdAt])
+  @@index([inviteCode])
+}
+
+model Season {
+  id              String              @id @default(cuid())
+  name            String
+  league          League              @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  leagueId        String
+  
+  // Season configuration
+  scheduleType    SeasonScheduleType
+  gamesPerOpponent Int?               // For ROUND_ROBIN: how many times each team plays each other
+  totalGamesPerTeam Int?              // For FIXED_GAMES: total games each team plays
+  
+  // Season timeline
+  startDate       DateTime?
+  endDate         DateTime?
+  
+  // Tournament settings
+  hasTournament   Boolean             @default(false)
+  tournamentName  String?
+  tournamentStartDate DateTime?
+  
+  // Season status
+  status          SeasonStatus        @default(DRAFT)
+  
+  // Metadata
+  description     String?
+  rules           String?             // Custom season rules
+  createdBy       User?               @relation("SeasonCreatedBy", fields: [createdById], references: [id])
+  createdById     String?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  
+  // Relations
+  seasonTeams     SeasonTeam[]
+  seasonMatches   SeasonMatch[]
+  seasonStandings SeasonStanding[]
+  tournament      Tournament?         @relation("SeasonTournament")
+  
+  @@index([leagueId])
+  @@index([status])
+  @@index([startDate])
+  @@index([endDate])
+}
+
+model SeasonTeam {
+  id       String @id @default(cuid())
+  season   Season @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  seasonId String
+  team     Team   @relation(fields: [teamId], references: [id])
+  teamId   String
+  joinedAt DateTime @default(now())
+  
+  // Team season stats (calculated)
+  wins         Int @default(0)
+  losses       Int @default(0)
+  draws        Int @default(0)
+  gamesPlayed  Int @default(0)
+  goalsFor     Int @default(0)
+  goalsAgainst Int @default(0)
+  points       Int @default(0) // League points based on wins/draws
+  
+  @@unique([seasonId, teamId])
+  @@index([seasonId])
+  @@index([teamId])
+}
+
+model SeasonMatch {
+  id         String            @id @default(cuid())
+  season     Season            @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  seasonId   String
+  
+  // Teams
+  homeTeam   Team              @relation("SeasonHomeMatches", fields: [homeTeamId], references: [id])
+  homeTeamId String
+  awayTeam   Team              @relation("SeasonAwayMatches", fields: [awayTeamId], references: [id])
+  awayTeamId String
+  
+  // Match details
+  round          Int?           // Round number (for round robin)
+  week           Int?           // Week number
+  scheduledAt    DateTime?
+  location       String?
+  description    String?        // Additional match details
+  
+  // Results
+  homeScore      Int?
+  awayScore      Int?
+  status         SeasonMatchStatus @default(SCHEDULED)
+  winnerId       String?        // Team ID of winner, null for draw
+  
+  // Availability tracking
+  availabilityRequests SeasonMatchAvailability[]
+  
+  // Score submissions for team-based score entry
+  scoreSubmissions SeasonMatchScoreSubmission[]
+  
+  // Metadata
+  notes          String?
+  createdBy      User?          @relation("SeasonMatchCreatedBy", fields: [createdById], references: [id])
+  createdById    String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  
+  @@index([seasonId])
+  @@index([homeTeamId])
+  @@index([awayTeamId])
+  @@index([scheduledAt])
+  @@index([status])
+}
+
+model SeasonMatchAvailability {
+  id           String             @id @default(cuid())
+  seasonMatch  SeasonMatch        @relation(fields: [seasonMatchId], references: [id], onDelete: Cascade)
+  seasonMatchId String
+  user         User               @relation(fields: [userId], references: [id])
+  userId       String
+  team         Team               @relation(fields: [teamId], references: [id])
+  teamId       String
+  status       AvailabilityStatus @default(MAYBE)
+  notes        String?
+  respondedAt  DateTime?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  @@unique([seasonMatchId, userId])
+  @@index([seasonMatchId])
+  @@index([userId])
+  @@index([teamId])
+}
+
+model SeasonMatchScoreSubmission {
+  id            String      @id @default(cuid())
+  seasonMatch   SeasonMatch @relation(fields: [seasonMatchId], references: [id], onDelete: Cascade)
+  seasonMatchId String
+  submittedBy   User        @relation("SeasonScoreSubmittedBy", fields: [submittedById], references: [id])
+  submittedById String
+  submittingTeam Team       @relation("SeasonScoreSubmittingTeam", fields: [submittingTeamId], references: [id])
+  submittingTeamId String
+  homeScore     Int
+  awayScore     Int
+  status        String      @default("PENDING") // PENDING, CONFIRMED, DISPUTED, REJECTED
+  confirmedBy   User?       @relation("SeasonScoreConfirmedBy", fields: [confirmedById], references: [id])
+  confirmedById String?
+  confirmingTeam Team?      @relation("SeasonScoreConfirmingTeam", fields: [confirmingTeamId], references: [id])
+  confirmingTeamId String?
+  notes         String?     // Optional notes from submitter
+  disputeReason String?     // Reason if disputed/rejected
+  submittedAt   DateTime    @default(now())
+  confirmedAt   DateTime?
+  
+  @@unique([seasonMatchId, submittingTeamId]) // Only one submission per team per match
+  @@index([seasonMatchId])
+  @@index([submittingTeamId])
+  @@index([status])
+}
+
+model SeasonStanding {
+  id              String @id @default(cuid())
+  season          Season @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  seasonId        String
+  team            Team   @relation(fields: [teamId], references: [id])
+  teamId          String
+  
+  position        Int
+  wins            Int    @default(0)
+  losses          Int    @default(0)
+  draws           Int    @default(0)
+  gamesPlayed     Int    @default(0)
+  goalsFor        Int    @default(0)
+  goalsAgainst    Int    @default(0)
+  goalDifference  Int    @default(0)
+  points          Int    @default(0)
+  
+  // Calculated fields
+  winPercentage   Float  @default(0.0)
+  form            String? // Last 5 results: "WWLDW"
+  
+  updatedAt       DateTime @updatedAt
+  
+  @@unique([seasonId, teamId])
+  @@index([seasonId, position])
+  @@index([seasonId, points])
+}
+
+model LeagueTeam {
+  id       String   @id @default(cuid())
+  league   League   @relation(fields: [leagueId], references: [id])
+  leagueId String
+  team     Team     @relation(fields: [teamId], references: [id])
+  teamId   String
+  joinedAt DateTime @default(now())
+
+  @@unique([leagueId, teamId])
+}
+
+model LeagueJoinRequest {
+  id            String    @id @default(cuid())
+  league        League    @relation(fields: [leagueId], references: [id])
+  leagueId      String
+  team          Team      @relation(fields: [teamId], references: [id])
+  teamId        String
+  requestedBy   User      @relation(fields: [requestedById], references: [id])
+  requestedById String
+  status        String    @default("PENDING") // PENDING, APPROVED, DENIED
+  requestedAt   DateTime  @default(now())
+  respondedAt   DateTime?
+  respondedBy   User?     @relation("LeagueJoinRequestRespondedBy", fields: [respondedById], references: [id])
+  respondedById String?
+
+  @@unique([leagueId, teamId])
+}
+
+model TeamJoinRequest {
+  id            String    @id @default(cuid())
+  team          Team      @relation(fields: [teamId], references: [id])
+  teamId        String
+  requestedBy   User      @relation(fields: [requestedById], references: [id])
+  requestedById String
+  status        String    @default("PENDING") // PENDING, APPROVED, DENIED
+  requestedAt   DateTime  @default(now())
+  respondedAt   DateTime?
+  respondedBy   User?     @relation("TeamJoinRequestRespondedBy", fields: [respondedById], references: [id])
+  respondedById String?
+
+  @@unique([teamId, requestedById])
+}
+
+model LeagueMatch {
+  id          String   @id @default(cuid())
+  league      League   @relation(fields: [leagueId], references: [id])
+  leagueId    String
+  homeTeam    Team     @relation("LeagueHome", fields: [homeTeamId], references: [id])
+  homeTeamId  String
+  awayTeam    Team     @relation("LeagueAway", fields: [awayTeamId], references: [id])
+  awayTeamId  String
+  scheduledAt DateTime
+  homeScore   Int?
+  awayScore   Int?
+  location    String?
+  match       Match?   @relation("MatchToLeagueMatch", fields: [matchId], references: [id])
+  matchId     String?  @unique
+  createdBy   User?    @relation("LeagueMatchCreatedBy", fields: [createdById], references: [id])
+  createdById String?  // League manager who created this match
+  createdAt   DateTime @default(now())
+
+  // Performance indexes
+  @@index([leagueId])
+  @@index([homeTeamId])
+  @@index([awayTeamId])
+  @@index([scheduledAt])
+}
+
+model ChatMessage {
+  id           String   @id @default(cuid())
+  team         Team     @relation(fields: [teamId], references: [id])
+  teamId       String
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String
+  content      String
+  league       League?  @relation(fields: [leagueId], references: [id])
+  leagueId     String?
+  scope        String   @default("team") // "team", "league", or "team_to_team"
+  targetTeam   Team?    @relation("ChatMessageTarget", fields: [targetTeamId], references: [id])
+  targetTeamId String? // For team-to-team messages
+  createdAt    DateTime @default(now())
+
+  // Performance indexes
+  @@index([teamId])
+  @@index([createdAt])
+}
+
+model AdminChatMessage {
+  id        String   @id @default(cuid())
+  content   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  teamId    String
+  team      Team     @relation(fields: [teamId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@index([teamId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+  team      Team?    @relation(fields: [teamId], references: [id])
+  teamId    String?
+  type      String
+  payload   Json?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model MatchProposal {
+  id            String              @id @default(cuid())
+  league        League              @relation(fields: [leagueId], references: [id])
+  leagueId      String
+  proposingTeam Team                @relation("ProposingTeam", fields: [proposingTeamId], references: [id])
+  proposingTeamId String
+  opponentTeam  Team                @relation("OpponentTeam", fields: [opponentTeamId], references: [id])
+  opponentTeamId String
+  proposedBy    User                @relation("ProposalCreatedBy", fields: [proposedById], references: [id])
+  proposedById  String
+  scheduledAt   DateTime
+  location      String?
+  description   String?             // Optional description from proposing team
+  status        MatchProposalStatus @default(PENDING)
+  reviewedBy    User?               @relation("ProposalReviewedBy", fields: [reviewedById], references: [id])
+  reviewedById  String?
+  reviewReason  String?             // Reason for approval/denial
+  createdMatchId String?            // ID of created match if approved
+  createdAt     DateTime            @default(now())
+  reviewedAt    DateTime?
+  
+  @@unique([leagueId, proposingTeamId, opponentTeamId, scheduledAt]) // Prevent duplicate proposals for same match
+}
+
+model MatchEditRequest {
+  id                 String          @id @default(cuid())
+  match              Match           @relation(fields: [matchId], references: [id])
+  matchId            String
+  requestedBy        User            @relation("EditRequestedBy", fields: [requestedById], references: [id])
+  requestedById      String
+  requestingTeam     Team            @relation("EditRequestingTeam", fields: [requestingTeamId], references: [id])
+  requestingTeamId   String
+  // Current match details (for comparison)
+  currentScheduledAt DateTime
+  currentLocation    String?
+  // Requested changes
+  newScheduledAt     DateTime?
+  newLocation        String?
+  changeReason       String          // Why the change is needed
+  status             MatchEditStatus @default(PENDING)
+  reviewedBy         User?           @relation("EditReviewedBy", fields: [reviewedById], references: [id])
+  reviewedById       String?
+  reviewReason       String?         // Reason for approval/denial
+  createdAt          DateTime        @default(now())
+  reviewedAt         DateTime?
+  
+  @@unique([matchId, requestingTeamId]) // Only one pending edit request per team per match
+}
+
+model MatchScoreSubmission {
+  id            String    @id @default(cuid())
+  match         Match     @relation(fields: [matchId], references: [id])
+  matchId       String
+  submittedBy   User      @relation("ScoreSubmittedBy", fields: [submittedById], references: [id])
+  submittedById String
+  submittingTeam Team     @relation("ScoreSubmittingTeam", fields: [submittingTeamId], references: [id])
+  submittingTeamId String
+  homeScore     Int
+  awayScore     Int
+  status        String    @default("PENDING") // PENDING, CONFIRMED, DISPUTED, REJECTED
+  confirmedBy   User?     @relation("ScoreConfirmedBy", fields: [confirmedById], references: [id])
+  confirmedById String?
+  confirmingTeam Team?    @relation("ScoreConfirmingTeam", fields: [confirmingTeamId], references: [id])
+  confirmingTeamId String?
+  notes         String?   // Optional notes from submitter
+  disputeReason String?   // Reason if disputed/rejected
+  submittedAt   DateTime  @default(now())
+  confirmedAt   DateTime?
+  
+  @@unique([matchId, submittingTeamId]) // Only one submission per team per match
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  actor     User?    @relation(fields: [actorId], references: [id])
+  actorId   String?
+  team      Team?    @relation(fields: [teamId], references: [id])
+  teamId    String?
+  targetId  String?
+  payload   Json?
+  createdAt DateTime @default(now())
+}
+
+/// NextAuth.js models (required by @next-auth/prisma-adapter)
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum TournamentFormat {
+  SINGLE_ELIMINATION
+  DOUBLE_ELIMINATION
+  TRIPLE_ELIMINATION
+}
+
+enum TournamentStatus {
+  CREATED         // Tournament created but not started
+  IN_PROGRESS     // Tournament is currently running
+  COMPLETED       // Tournament finished with winner
+  CANCELLED       // Tournament was cancelled
+}
+
+enum TournamentMatchStatus {
+  PENDING         // Match not yet played
+  IN_PROGRESS     // Match currently being played
+  COMPLETED       // Match finished with results
+  WALKOVER        // One team didn't show up
+}
+
+model Tournament {
+  id          String           @id @default(cuid())
+  name        String
+  description String?
+  format      TournamentFormat @default(SINGLE_ELIMINATION)
+  status      TournamentStatus @default(CREATED)
+  
+  // Tournament settings
+  hasConsolationBracket Boolean @default(false)
+  randomByes            Boolean @default(true)
+  maxTeams              Int?    // Optional limit on participating teams
+  
+  // League relationship
+  league      League  @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  leagueId    String
+  
+  // Season relationship (optional - tournaments can be standalone or season-ending)
+  season      Season? @relation("SeasonTournament", fields: [seasonId], references: [id])
+  seasonId    String? @unique
+  
+  // Creator (league manager)
+  createdBy   User    @relation("TournamentCreatedBy", fields: [createdById], references: [id])
+  createdById String
+  
+  // Tournament results
+  winner      TournamentTeam? @relation("TournamentWinner", fields: [winnerId], references: [id])
+  winnerId    String?         @unique
+  runnerUp    TournamentTeam? @relation("TournamentRunnerUp", fields: [runnerUpId], references: [id])
+  runnerUpId  String?         @unique
+  thirdPlace  TournamentTeam? @relation("TournamentThirdPlace", fields: [thirdPlaceId], references: [id])
+  thirdPlaceId String?        @unique
+  
+  createdAt   DateTime @default(now())
+  startedAt   DateTime?
+  completedAt DateTime?
+  
+  // Relations
+  teams       TournamentTeam[]
+  rounds      TournamentRound[]
+  matches     TournamentMatch[]
+}
+
+model TournamentTeam {
+  id           String  @id @default(cuid())
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  tournamentId String
+  team         Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId       String
+  
+  // Tournament specific data
+  seed         Int?    // Seeding position (1 = highest seed)
+  receivedBye  Boolean @default(false)
+  eliminated   Boolean @default(false)
+  eliminatedInRound Int? // Which round they were eliminated in
+  
+  // Placement results
+  finalPlacement Int? // 1st, 2nd, 3rd, etc.
+  
+  createdAt    DateTime @default(now())
+  
+  // Relations for tournament results
+  wonTournaments       Tournament[] @relation("TournamentWinner")
+  runnerUpTournaments  Tournament[] @relation("TournamentRunnerUp")
+  thirdPlaceTournaments Tournament[] @relation("TournamentThirdPlace")
+  
+  homeMatches   TournamentMatch[] @relation("TournamentHomeTeam")
+  awayMatches   TournamentMatch[] @relation("TournamentAwayTeam")
+  
+  @@unique([tournamentId, teamId])
+}
+
+model TournamentRound {
+  id           String     @id @default(cuid())
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  tournamentId String
+  
+  roundNumber  Int        // 1, 2, 3, etc. (1 = first round)
+  name         String     // "Round 1", "Quarterfinals", "Semifinals", "Finals", etc.
+  isComplete   Boolean    @default(false)
+  
+  // Bracket type
+  bracket      String     @default("main") // "main", "consolation", "losers"
+  
+  createdAt    DateTime   @default(now())
+  completedAt  DateTime?
+  
+  // Relations
+  matches      TournamentMatch[]
+}
+
+model TournamentMatch {
+  id           String                @id @default(cuid())
+  tournament   Tournament            @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  tournamentId String
+  round        TournamentRound       @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  roundId      String
+  
+  // Match details
+  matchNumber  Int                   // Sequential match number in tournament
+  bracket      String                @default("main") // "main", "consolation", "losers"
+  
+  // Teams
+  homeTeam     TournamentTeam?       @relation("TournamentHomeTeam", fields: [homeTeamId], references: [id])
+  homeTeamId   String?
+  awayTeam     TournamentTeam?       @relation("TournamentAwayTeam", fields: [awayTeamId], references: [id])
+  awayTeamId   String?
+  
+  // Results
+  homeScore    Int?
+  awayScore    Int?
+  status       TournamentMatchStatus @default(PENDING)
+  winnerId     String?
+  
+  // Match metadata
+  scheduledAt  DateTime?
+  playedAt     DateTime?
+  notes        String?
+  
+  // Bracket progression
+  nextMatchId  String?               // Which match the winner advances to
+  nextMatch    TournamentMatch?      @relation("NextMatch", fields: [nextMatchId], references: [id])
+  previousMatches TournamentMatch[]  @relation("NextMatch")
+  
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
