@@ -1,13 +1,13 @@
 {
-  "name": "Grudge App - Sports Team Management",
-  "short_name": "Grudge App",
+  "name": "Grudge - Sports Team Management",
+  "short_name": "Grudge",
   "description": "Comprehensive sports team management application for matches, practices, and tournaments",
-  "start_url": "/",
+  "start_url": "/Grudge/",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#7c3aed",
   "orientation": "portrait-primary",
-  "scope": "/",
+  "scope": "/Grudge/",
   "lang": "en-US",
   "categories": ["sports", "productivity", "social"],
  "icons": [
@@ -466,41 +466,41 @@
       "name": "Dashboard",
       "short_name": "Dashboard",
       "description": "View team dashboard",
-      "url": "/dashboard",
+  "url": "/Grudge/dashboard",
       "icons": [{"src": "icons/icon-144x144.svg", "sizes": "144x144"}]
     },
     {
       "name": "Matches",
       "short_name": "Matches",
       "description": "View upcoming matches",
-      "url": "/matches",
+  "url": "/Grudge/matches",
       "icons": [{"src": "icons/icon-144x144.svg", "sizes": "144x144"}]
     },
     {
       "name": "Chat",
       "short_name": "Chat",
       "description": "Team chat",
-      "url": "/chat",
+  "url": "/Grudge/chat",
       "icons": [{"src": "icons/icon-144x144.svg", "sizes": "144x144"}]
     },
     {
       "name": "Notifications",
       "short_name": "Notifications",
       "description": "View notifications",
-      "url": "/notifications",
+  "url": "/Grudge/notifications",
       "icons": [{"src": "icons/icon-144x144.svg", "sizes": "144x144"}]
     }
   ],
   "prefer_related_applications": false,
     "screenshots": [
       {
-        "src": "/screenshots/dashboard.png",
+  "src": "/Grudge/screenshots/dashboard.png",
         "sizes": "1280x720",
         "type": "image/png",
         "description": "Dashboard view"
       },
       {
-        "src": "/screenshots/matches.png",
+  "src": "/Grudge/screenshots/matches.png",
         "sizes": "1280x720",
         "type": "image/png",
         "description": "Matches list"
@@ -513,11 +513,11 @@
     "protocol_handlers": [
       {
         "protocol": "mailto",
-        "url": "/mail-handler?uri=%s"
+  "url": "/Grudge/mail-handler?uri=%s"
       },
       {
         "protocol": "web+grudge",
-        "url": "/protocol-handler?uri=%s"
+  "url": "/Grudge/protocol-handler?uri=%s"
       }
     ]
 }
