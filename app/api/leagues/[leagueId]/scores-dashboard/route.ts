@@ -68,8 +68,8 @@ export async function GET(
 
     // Separate into categories
     const pendingSubmissions = seasonMatches
-      .filter(match => match.scoreSubmissions.length > 0)
-      .map(match => ({
+  .filter((match: any) => match.scoreSubmissions.length > 0)
+  .map((match: any) => ({
         ...match.scoreSubmissions[0],
         seasonMatch: {
           id: match.id,
@@ -83,7 +83,7 @@ export async function GET(
       }))
 
     const unrecordedMatches = seasonMatches.filter(
-      match =>
+  (match: any) =>
         match.status === 'SCHEDULED' &&
         match.scoreSubmissions.length === 0 &&
         match.homeScore === null &&
