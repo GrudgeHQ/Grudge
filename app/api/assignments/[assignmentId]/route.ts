@@ -41,7 +41,7 @@ export async function DELETE(req: Request, context: any) {
   // Check if this is a regular match assignment
   if (assignment.match) {
     // Handle regular match assignment deletion
-    const callerMembership = assignment.match.team.members.find((m) => m.userId === caller.id)
+  const callerMembership = assignment.match.team.members.find((m: any) => m.userId === caller.id)
     if (!callerMembership || !callerMembership.isAdmin) {
       return NextResponse.json({ error: 'Forbidden: Only team admins can remove assignments' }, { status: 403 })
     }
@@ -105,8 +105,8 @@ export async function DELETE(req: Request, context: any) {
   }
 
   // For league matches, determine which team the caller is admin of
-  const isHomeTeamAdmin = seasonMatch.homeTeam.members.some(m => m.userId === caller.id && m.isAdmin)
-  const isAwayTeamAdmin = seasonMatch.awayTeam.members.some(m => m.userId === caller.id && m.isAdmin)
+  const isHomeTeamAdmin = seasonMatch.homeTeam.members.some((m: any) => m.userId === caller.id && m.isAdmin)
+  const isAwayTeamAdmin = seasonMatch.awayTeam.members.some((m: any) => m.userId === caller.id && m.isAdmin)
 
   if (!isHomeTeamAdmin && !isAwayTeamAdmin) {
     return NextResponse.json({ error: 'Forbidden: Only team admins can remove assignments' }, { status: 403 })
@@ -117,7 +117,7 @@ export async function DELETE(req: Request, context: any) {
   const callerTeamId = callerTeam.id
 
   // Verify the assigned user is from the caller's team (can only remove assignments from own team)
-  const assignedUserIsFromCallerTeam = callerTeam.members.some(m => m.userId === assignment.userId)
+  const assignedUserIsFromCallerTeam = callerTeam.members.some((m: any) => m.userId === assignment.userId)
   if (!assignedUserIsFromCallerTeam) {
     return NextResponse.json({ error: 'You can only remove assignments from your own team members' }, { status: 403 })
   }
