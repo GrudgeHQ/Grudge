@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: 'export',
   // Development performance optimizations
   turbopack: {
     root: process.cwd(),
