@@ -101,10 +101,10 @@ export async function GET(
   // Transform the data to match the frontend expectations
   // Flatten season matches into a matches array (SeasonMatches are the actual league matches)
   // Filter out matches without valid scheduled dates
-  const matches = league.seasons.flatMap(season => 
+  const matches = league.seasons.flatMap((season: any) => 
     season.seasonMatches
-      .filter(match => match.scheduledAt !== null) // Only include matches with valid dates
-      .map(match => ({
+  .filter((match: any) => match.scheduledAt !== null) // Only include matches with valid dates
+  .map((match: any) => ({
         id: match.id,
         scheduledAt: match.scheduledAt,
         location: match.location,
