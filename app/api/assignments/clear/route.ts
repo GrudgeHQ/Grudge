@@ -21,7 +21,7 @@ export async function DELETE() {
   }
 
   // Check if user has any pending assignments (unconfirmed)
-  const pendingAssignments = user.assignments.filter(a => !a.confirmed)
+  const pendingAssignments = user.assignments.filter((a: any) => !a.confirmed)
   
   if (pendingAssignments.length > 0) {
     return NextResponse.json({ 
