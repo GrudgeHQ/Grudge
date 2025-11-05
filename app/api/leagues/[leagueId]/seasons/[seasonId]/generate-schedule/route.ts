@@ -78,7 +78,7 @@ export async function POST(
       })
     }
 
-    const teams = season.seasonTeams.map(st => ({ id: st.teamId, name: st.team.name }))
+  const teams = season.seasonTeams.map((st: any) => ({ id: st.teamId, name: st.team.name }))
     
     if (teams.length < 2) {
       return NextResponse.json({ error: 'At least 2 teams are required to generate a schedule' }, { status: 400 })
