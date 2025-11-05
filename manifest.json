@@ -1,0 +1,99 @@
+{
+  "name": "Grudge App - Sports Team Management",
+  "short_name": "Grudge App",
+  "description": "Comprehensive sports team management application for matches, practices, and tournaments",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#7c3aed",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en-US",
+  "categories": ["sports", "productivity", "social"],
+  "icons": [
+    {
+      "src": "/icons/icon-144x144.svg",
+      "sizes": "144x144",
+      "type": "image/svg+xml",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-152x152.svg",
+      "sizes": "152x152",
+      "type": "image/svg+xml",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-192x192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View team dashboard",
+      "url": "/dashboard",
+      "icons": [{"src": "/icons/icon-144x144.svg", "sizes": "144x144"}]
+    },
+    {
+      "name": "Matches",
+      "short_name": "Matches",
+      "description": "View upcoming matches",
+      "url": "/matches",
+      "icons": [{"src": "/icons/icon-144x144.svg", "sizes": "144x144"}]
+    },
+    {
+      "name": "Chat",
+      "short_name": "Chat",
+      "description": "Team chat",
+      "url": "/chat",
+      "icons": [{"src": "/icons/icon-144x144.svg", "sizes": "144x144"}]
+    },
+    {
+      "name": "Notifications",
+      "short_name": "Notifications",
+      "description": "View notifications",
+      "url": "/notifications",
+      "icons": [{"src": "/icons/icon-144x144.svg", "sizes": "144x144"}]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "screenshots": [
+    {
+      "src": "/screenshots/dashboard.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "description": "Dashboard view"
+    },
+    {
+      "src": "/screenshots/matches.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "description": "Matches list"
+    }
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "mailto",
+      "url": "/mail-handler?uri=%s"
+    },
+    {
+      "protocol": "web+grudge",
+      "url": "/protocol-handler?uri=%s"
+    }
+  ],
+  "display_override": ["standalone", "minimal-ui"]
+}
