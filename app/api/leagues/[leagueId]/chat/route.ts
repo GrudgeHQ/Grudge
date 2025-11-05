@@ -39,7 +39,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ leagueId
       select: { teamId: true }
     })
 
-    const teamIds = leagueTeamIds.map(lt => lt.teamId)
+  const teamIds = leagueTeamIds.map((lt: any) => lt.teamId)
 
     const messages = await prisma.chatMessage.findMany({
       where: {
@@ -130,8 +130,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ leagueI
 
     // Flatten all team members and exclude sender
     const allMemberIds = leagueTeams
-      .flatMap(lt => lt.team.members.map(m => m.userId))
-      .filter(userId => userId !== user.id)
+  .flatMap((lt: any) => lt.team.members.map((m: any) => m.userId))
+  .filter((userId: any) => userId !== user.id)
 
     // Remove duplicates (users could be in multiple teams)
     const uniqueMemberIds = [...new Set(allMemberIds)]
@@ -206,7 +206,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ leagu
       select: { teamId: true }
     })
 
-    const teamIds = leagueTeamIds.map(lt => lt.teamId)
+  const teamIds = leagueTeamIds.map((lt: any) => lt.teamId)
 
     // Delete only league-scoped messages (messages with [LEAGUE] prefix)
     await prisma.chatMessage.deleteMany({
