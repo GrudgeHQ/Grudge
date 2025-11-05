@@ -70,7 +70,7 @@ export async function POST(
     }
 
     // Create notifications for all team members
-  const notifications = team.members.map((member: any) => ({
+  const notifications = team.members.map((member: { user: { id: string } }) => ({
       userId: member.user.id,
       type: 'LEAGUE_INVITATION' as const,
       message: `Your team "${team.name}" has been invited to join the "${league.name}" league`,

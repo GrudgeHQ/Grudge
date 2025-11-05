@@ -39,7 +39,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ leagueId
       select: { teamId: true }
     })
 
-  const teamIds = leagueTeamIds.map((lt: any) => lt.teamId)
+  const teamIds = leagueTeamIds.map((lt: { teamId: string }) => lt.teamId)
 
     const messages = await prisma.chatMessage.findMany({
       where: {
@@ -130,8 +130,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ leagueI
 
     // Flatten all team members and exclude sender
     const allMemberIds = leagueTeams
-  .flatMap((lt: any) => lt.team.members.map((m: any) => m.userId))
-  .filter((userId: any) => userId !== user.id)
+      .flatMap((lt: { team: { members: { userId: string }[] } }) => lt.team.members.map((m: { userId: string }) => m.userId))
+      .filter((userId: string) => userId !== user.id)
 
     // Remove duplicates (users could be in multiple teams)
     const uniqueMemberIds = [...new Set(allMemberIds)]

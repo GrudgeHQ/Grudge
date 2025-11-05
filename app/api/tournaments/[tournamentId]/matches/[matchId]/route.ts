@@ -124,8 +124,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ tourname
         }
       })
 
-  const allMatchesComplete = round.matches.every((m: any) => 
-        m.id === matchId ? true : m.status === 'COMPLETED'
+  const allMatchesComplete = round.matches.every((m: { id: string; status: string }) => 
+    m.id === matchId ? true : m.status === 'COMPLETED'
       )
 
       let updatedRound = round
@@ -186,8 +186,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ tourname
 
       // Check if this was the final match
       const finalRound = tournament.rounds
-  .filter((r: any) => r.bracket === 'main')
-  .sort((a: any, b: any) => b.roundNumber - a.roundNumber)[0]
+        .filter((r: { bracket: string }) => r.bracket === 'main')
+        .sort((a: { roundNumber: number }, b: { roundNumber: number }) => b.roundNumber - a.roundNumber)[0]
 
       const isFinalMatch = finalRound && finalRound.matches.length === 1 && 
                           finalRound.matches[0].id === matchId

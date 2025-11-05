@@ -108,9 +108,9 @@ export async function GET(
         scheduleType: currentSeason.scheduleType,
         startDate: currentSeason.startDate,
         endDate: currentSeason.endDate,
-  teams: currentSeason.seasonTeams.map((st: any) => st.team),
+  teams: currentSeason.seasonTeams.map((st: { team: { id: string; name: string; sport: string } }) => st.team),
         matchCount: currentSeason.seasonMatches.length,
-  completedMatches: currentSeason.seasonMatches.filter((m: any) => m.status === 'COMPLETED').length
+  completedMatches: currentSeason.seasonMatches.filter((m: { status: string }) => m.status === 'COMPLETED').length
       }
     })
 

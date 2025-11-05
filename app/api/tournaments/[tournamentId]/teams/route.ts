@@ -53,14 +53,14 @@ export async function POST(req: Request, { params }: { params: Promise<{ tournam
     }
 
     // Verify team is in the league
-  const teamInLeague = tournament.league.teams.some((lt: any) => lt.teamId === teamId)
+  const teamInLeague = tournament.league.teams.some((lt: { teamId: string }) => lt.teamId === teamId)
     if (!teamInLeague) {
       return NextResponse.json({ error: 'Team is not part of this league' }, { status: 400 })
     }
 
     if (action === 'add') {
       // Check if team is already in tournament
-  const teamInTournament = tournament.teams.some((tt: any) => tt.teamId === teamId)
+  const teamInTournament = tournament.teams.some((tt: { teamId: string }) => tt.teamId === teamId)
       if (teamInTournament) {
         return NextResponse.json({ error: 'Team is already in this tournament' }, { status: 400 })
       }
@@ -88,7 +88,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ tournam
       return NextResponse.json({ tournamentTeam }, { status: 201 })
     } else if (action === 'remove') {
       // Check if team is in tournament
-  const teamInTournament = tournament.teams.find((tt: any) => tt.teamId === teamId)
+  const teamInTournament = tournament.teams.find((tt: { teamId: string }) => tt.teamId === teamId)
       if (!teamInTournament) {
         return NextResponse.json({ error: 'Team is not in this tournament' }, { status: 400 })
       }
@@ -171,7 +171,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ tourname
     }
 
     // Update seeds for all teams
-  const updatePromises = seeds.map((seedUpdate: any) =>
+  const updatePromises = seeds.map((seedUpdate: { teamId: string; seed: number }) =>
       (prisma as any).tournamentTeam.update({
         where: {
           tournamentId_teamId: {

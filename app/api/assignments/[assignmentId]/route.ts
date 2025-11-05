@@ -41,7 +41,7 @@ export async function DELETE(req: Request, context: any) {
   // Check if this is a regular match assignment
   if (assignment.match) {
     // Handle regular match assignment deletion
-  const callerMembership = assignment.match.team.members.find((m: any) => m.userId === caller.id)
+  const callerMembership = assignment.match.team.members.find((m: { userId: string; isAdmin?: boolean }) => m.userId === caller.id)
     if (!callerMembership || !callerMembership.isAdmin) {
       return NextResponse.json({ error: 'Forbidden: Only team admins can remove assignments' }, { status: 403 })
     }
