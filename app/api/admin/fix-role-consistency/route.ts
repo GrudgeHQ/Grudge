@@ -49,7 +49,7 @@ export async function POST(request: Request) {
 
     // Update all inconsistent members to have admin access
     const updateResults = await Promise.all(
-      inconsistentMembers.map(member =>
+      inconsistentMembers.map((member: any) =>
         prisma.teamMember.update({
           where: {
             id: member.id
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
 
     // Create audit log entries for these changes
     const auditEntries = await Promise.all(
-      inconsistentMembers.map(member =>
+      inconsistentMembers.map((member: any) =>
         prisma.auditLog.create({
           data: {
             actorId: member.userId,
