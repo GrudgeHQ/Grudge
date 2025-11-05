@@ -1,0 +1,7 @@
+<svg width="144" height="144" viewBox="0 0 144 144" xmlns="http://www.w3.org/2000/svg">
+  <rect width="144" height="144" fill="#7c3aed" rx="24"/>
+  <circle cx="72" cy="72" r="45" fill="white" opacity="0.9"/>
+  <path d="M72 42 L87 66 L72 57 L57 66 Z" fill="#7c3aed"/>
+  <path d="M72 102 L57 78 L72 87 L87 78 Z" fill="#7c3aed"/>
+  <text x="72" y="78" text-anchor="middle" fill="#7c3aed" font-family="Arial, sans-serif" font-size="15" font-weight="bold">GA</text>
+</svg>

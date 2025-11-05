@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grudge - Team Management App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-b from-blue-50 to-white">
+  <!-- Navigation Bar -->
+  <nav class="bg-white border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center gap-8">
+          <a href="#" class="text-2xl font-bold text-blue-600">Grudge</a>
+        </div>
+        <div class="flex items-center gap-4">
+          <a href="#login" class="text-gray-700 hover:text-blue-600">Sign in</a>
+          <a href="#register" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Register</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <div class="flex min-h-screen items-center justify-center">
+    <main class="w-full max-w-4xl px-6 py-16 text-center">
+      <h1 class="text-5xl font-bold mb-4 text-gray-900">Grudge</h1>
+      <p class="text-xl text-gray-600 mb-8">
+        The ultimate team management app for sports teams
+      </p>
+      <p class="text-lg text-gray-500 mb-12 max-w-2xl mx-auto">
+        Manage your team, schedule matches, track availability, and communicate in real-time.
+        Perfect for recreational leagues, pickup games, and competitive teams.
+      </p>
+      
+      <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+        <a href="#register" class="px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors text-lg">
+          Get Started
+        </a>
+        <a href="#login" class="px-8 py-4 bg-white border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors text-lg">
+          Sign In
+        </a>
+      </div>
+
+      <!-- Features Grid -->
+      <div class="grid md:grid-cols-3 gap-8 text-left">
+        <div class="p-6 bg-white rounded-lg shadow-sm">
+          <h3 class="text-lg font-semibold mb-2 text-gray-900">Team Management</h3>
+          <p class="text-gray-600">Create teams, invite members, and manage roles with ease</p>
+        </div>
+        <div class="p-6 bg-white rounded-lg shadow-sm">
+          <h3 class="text-lg font-semibold mb-2 text-gray-900">Match Scheduling</h3>
+          <p class="text-gray-600">Schedule matches, track availability, and assign players</p>
+        </div>
+        <div class="p-6 bg-white rounded-lg shadow-sm">
+          <h3 class="text-lg font-semibold mb-2 text-gray-900">Real-time Chat</h3>
+          <p class="text-gray-600">Stay connected with team chat and live notifications</p>
+        </div>
+      </div>
+
+      <div class="mt-12">
+        <a href="#dashboard" class="text-blue-600 hover:underline">
+          Already have an account? Go to Dashboard →
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <!-- Demo Dashboard Section -->
+  <section class="bg-gray-50 py-16" id="dashboard">
+    <div class="max-w-5xl mx-auto px-6">
+      <h2 class="text-3xl font-bold mb-8 text-center">Dashboard Preview</h2>
+      
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-2xl font-bold">Dashboard</h3>
+          <div class="flex items-center gap-4">
+            <span class="text-sm text-gray-600">demo@example.com</span>
+            <button class="text-sm text-gray-600 hover:text-gray-900">Sign out</button>
+          </div>
+        </div>
+
+        <section class="mb-6">
+          <h4 class="font-semibold mb-2">Your teams</h4>
+          <ul class="space-y-2">
+            <li class="border p-3 rounded hover:bg-gray-50">
+              <div class="font-medium text-blue-600">Lakeside FC — SOCCER</div>
+              <div class="text-sm text-gray-600">Role: ADMIN (admin)</div>
+            </li>
+            <li class="border p-3 rounded hover:bg-gray-50">
+              <div class="font-medium text-blue-600">Downtown Ballers — BASKETBALL</div>
+              <div class="text-sm text-gray-600">Role: MEMBER</div>
+            </li>
+          </ul>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <section>
+            <h4 class="font-semibold mb-2">Create a new team</h4>
+            <form class="space-y-3">
+              <input class="border px-3 py-2 w-full rounded" placeholder="Team name" />
+              <select class="border px-3 py-2 w-full rounded">
+                <option>Soccer</option>
+                <option>Basketball</option>
+                <option>Baseball</option>
+              </select>
+              <button type="button" class="bg-green-600 text-white px-4 py-2 rounded w-full font-semibold hover:bg-green-700">Create team</button>
+            </form>
+          </section>
+
+          <section>
+            <h4 class="font-semibold mb-2">Join an existing team</h4>
+            <button class="block text-center bg-green-600 text-white px-4 py-3 rounded font-semibold hover:bg-green-700 w-full">
+              Join Team with Invite Code
+            </button>
+            <p class="text-sm text-gray-600 mt-2">
+              Have an invite code? Join an existing team to get started.
+            </p>
+          </section>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Matches Preview -->
+  <section class="py-16" id="matches">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold">Upcoming Matches</h2>
+        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Create Match</button>
+      </div>
+
+      <div class="space-y-4">
+        <div class="border rounded-lg p-4 bg-white hover:shadow-md transition-shadow">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="text-lg font-semibold mb-2">vs Riverside United</h3>
+              <div class="text-sm text-gray-600 space-y-1">
+                <div>📅 November 5, 2025 at 6:00 PM</div>
+                <div>📍 Riverside Park Field 3</div>
+              </div>
+            </div>
+            <div class="text-sm text-gray-500">Upcoming</div>
+          </div>
+        </div>
+
+        <div class="border rounded-lg p-4 bg-white hover:shadow-md transition-shadow">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="text-lg font-semibold mb-2">vs Mountain View FC</h3>
+              <div class="text-sm text-gray-600 space-y-1">
+                <div>📅 November 12, 2025 at 7:30 PM</div>
+                <div>📍 Central Stadium</div>
+              </div>
+            </div>
+            <div class="text-sm text-gray-500">Upcoming</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-8 mt-16">
+    <div class="max-w-5xl mx-auto px-6 text-center">
+      <p class="text-lg font-semibold mb-2">Grudge</p>
+      <p class="text-gray-400 text-sm">
+        This is a static preview. Run <code class="bg-gray-800 px-2 py-1 rounded">start-dev.bat</code> to see the full interactive app.
+      </p>
+      <p class="text-gray-500 text-xs mt-4">
+        Built with Next.js, Prisma, TailwindCSS, and NextAuth
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>
