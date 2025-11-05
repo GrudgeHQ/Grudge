@@ -59,9 +59,9 @@ export async function POST(
     }
 
     // Verify user is an admin of one of the teams
-    const userAdminTeamIds = user.memberships.map(m => m.teamId)
+  const userAdminTeamIds = user.memberships.map((m: any) => m.teamId)
     const matchTeamIds = [seasonMatch.homeTeamId, seasonMatch.awayTeamId]
-    const submittingTeamId = matchTeamIds.find(teamId => userAdminTeamIds.includes(teamId))
+  const submittingTeamId = matchTeamIds.find((teamId: any) => userAdminTeamIds.includes(teamId))
 
     if (!submittingTeamId) {
       return NextResponse.json({ 
@@ -113,7 +113,7 @@ export async function POST(
     })
 
     // Notify the opposing team administrators
-    const opposingTeamId = matchTeamIds.find(teamId => teamId !== submittingTeamId)
+  const opposingTeamId = matchTeamIds.find((teamId: any) => teamId !== submittingTeamId)
     if (opposingTeamId) {
       const opposingTeamAdmins = await prisma.teamMember.findMany({
         where: {
@@ -124,7 +124,7 @@ export async function POST(
       })
 
       await Promise.all(
-        opposingTeamAdmins.map(admin =>
+  opposingTeamAdmins.map((admin: any) =>
           prisma.notification.create({
             data: {
               userId: admin.userId,
@@ -229,9 +229,9 @@ export async function GET(
     }
 
     // Check if user has access (team member or league manager)
-    const userTeamIds = user.memberships.map(m => m.teamId)
+  const userTeamIds = user.memberships.map((m: any) => m.teamId)
     const matchTeamIds = [seasonMatch.homeTeam.id, seasonMatch.awayTeam.id]
-    const hasTeamAccess = userTeamIds.some(teamId => matchTeamIds.includes(teamId))
+  const hasTeamAccess = userTeamIds.some((teamId: any) => matchTeamIds.includes(teamId))
     const isLeagueManager = seasonMatch.season.league.creatorId === user.id
 
     if (!hasTeamAccess && !isLeagueManager) {
@@ -275,7 +275,7 @@ export async function GET(
     })
 
     // Transform submissions for frontend
-    const transformedSubmissions = submissions.map(submission => ({
+  const transformedSubmissions = submissions.map((submission: any) => ({
       id: submission.id,
       homeScore: submission.homeScore,
       awayScore: submission.awayScore,
@@ -306,7 +306,7 @@ export async function GET(
       userAccess: {
         isLeagueManager,
         userTeamIds,
-        isAdmin: user.memberships.some(m => 
+  isAdmin: user.memberships.some((m: any) => 
           matchTeamIds.includes(m.teamId) && m.isAdmin
         )
       }

@@ -64,7 +64,7 @@ export async function PATCH(
   }
 
   // Verify user is admin of this team
-  const membership = user.memberships.find((tm) => tm.teamId === practice.teamId)
+  const membership = user.memberships.find((tm: any) => tm.teamId === practice.teamId)
   if (!membership || !membership.isAdmin) {
     return NextResponse.json({ error: 'You must be an admin to update practices' }, { status: 403 })
   }
@@ -122,7 +122,7 @@ export async function DELETE(
   }
 
   // Verify user is admin of this team
-  const membership = user.memberships.find((tm) => tm.teamId === practice.teamId)
+  const membership = user.memberships.find((tm: any) => tm.teamId === practice.teamId)
   if (!membership || !membership.isAdmin) {
     return NextResponse.json({ error: 'You must be an admin to delete practices' }, { status: 403 })
   }

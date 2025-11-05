@@ -77,14 +77,14 @@ export async function POST(
     }
 
     // Verify user is an admin of the opposing team
-    const userTeamIds = user.memberships.filter(m => m.isAdmin).map(m => m.teamId)
+  const userTeamIds = user.memberships.filter((m: any) => m.isAdmin).map((m: any) => m.teamId)
     const matchTeamIds = [
       scoreSubmission.seasonMatch.homeTeamId,
       scoreSubmission.seasonMatch.awayTeamId
     ]
     
     // The confirming team must be different from the submitting team
-    const opposingTeamId = matchTeamIds.find(teamId => 
+  const opposingTeamId = matchTeamIds.find((teamId: any) => 
       teamId !== scoreSubmission.submittingTeamId && userTeamIds.includes(teamId)
     )
 
@@ -147,7 +147,7 @@ export async function POST(
 
       // Notify submitting team admins that score was confirmed
       await Promise.all(
-        submittingTeamAdmins.map(admin => 
+  submittingTeamAdmins.map((admin: any) =>
           prisma.notification.create({
             data: {
               userId: admin.userId,
@@ -249,7 +249,7 @@ export async function POST(
 
       // Notify submitting team admins that score was disputed
       await Promise.all(
-        submittingTeamAdmins.map(admin => 
+  submittingTeamAdmins.map((admin: any) =>
           prisma.notification.create({
             data: {
               userId: admin.userId,

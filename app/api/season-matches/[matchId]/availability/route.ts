@@ -40,19 +40,19 @@ export async function GET(req: Request, context: any) {
     return NextResponse.json({ error: 'Match not found' }, { status: 404 })
   }
 
-  const isHomeTeamMember = seasonMatch.homeTeam.members.some(m => m.userId === user.id)
-  const isAwayTeamMember = seasonMatch.awayTeam.members.some(m => m.userId === user.id)
+  const isHomeTeamMember = seasonMatch.homeTeam.members.some((m: any) => m.userId === user.id)
+  const isAwayTeamMember = seasonMatch.awayTeam.members.some((m: any) => m.userId === user.id)
   if (!isHomeTeamMember && !isAwayTeamMember) {
     return NextResponse.json({ error: 'Only team members can view availability' }, { status: 403 })
   }
 
   const userTeam = isHomeTeamMember ? seasonMatch.homeTeam : seasonMatch.awayTeam
-  const membership = userTeam.members.find(m => m.userId === user.id)
+  const membership = userTeam.members.find((m: any) => m.userId === user.id)
   const isAdmin = !!membership?.isAdmin
 
   // Filter availability to the user's team; if not admin, include only their own
-  const filteredAvail = seasonMatch.availabilityRequests.filter(ar => ar.teamId === userTeam.id)
-  const scopedAvail = isAdmin ? filteredAvail : filteredAvail.filter(ar => ar.userId === user.id)
+  const filteredAvail = seasonMatch.availabilityRequests.filter((ar: any) => ar.teamId === userTeam.id)
+  const scopedAvail = isAdmin ? filteredAvail : filteredAvail.filter((ar: any) => ar.userId === user.id)
 
   const transformed = {
     id: seasonMatch.id,
@@ -66,7 +66,7 @@ export async function GET(req: Request, context: any) {
       name: seasonMatch.season.name,
       league: { name: seasonMatch.season.league.name }
     },
-    availabilityRequests: scopedAvail.map(ar => ({
+  availabilityRequests: scopedAvail.map((ar: any) => ({
       id: ar.id,
       status: ar.status,
       notes: ar.notes || undefined,
@@ -115,8 +115,8 @@ export async function POST(req: Request, context: any) {
     return NextResponse.json({ error: 'Match not found' }, { status: 404 })
   }
 
-  const isHomeTeamMember = seasonMatch.homeTeam.members.some(m => m.userId === user.id)
-  const isAwayTeamMember = seasonMatch.awayTeam.members.some(m => m.userId === user.id)
+  const isHomeTeamMember = seasonMatch.homeTeam.members.some((m: any) => m.userId === user.id)
+  const isAwayTeamMember = seasonMatch.awayTeam.members.some((m: any) => m.userId === user.id)
   if (!isHomeTeamMember && !isAwayTeamMember) {
     return NextResponse.json({ error: 'Only team members can provide availability' }, { status: 403 })
   }
