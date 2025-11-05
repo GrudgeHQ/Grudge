@@ -108,7 +108,7 @@ export async function PATCH(
     await prisma.match.deleteMany({
       where: {
         id: {
-          in: oldTeamMatches.map(m => m.id)
+           in: oldTeamMatches.map((m: any) => m.id)
         }
       }
     })
