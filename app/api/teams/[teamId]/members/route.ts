@@ -26,7 +26,7 @@ export async function GET(
   }
 
   // Verify user is a member of this team
-  const membership = user.memberships.find((m) => m.teamId === teamId)
+  const membership = user.memberships.find((m: any) => m.teamId === teamId)
   if (!membership) {
     return NextResponse.json({ error: 'You are not a member of this team' }, { status: 403 })
   }

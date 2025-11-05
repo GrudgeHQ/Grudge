@@ -142,13 +142,13 @@ export async function POST(req: Request, { params }: { params: Promise<{ teamId:
     })
 
     const allMemberIds = [
-      ...sourceTeamMembers.map(m => m.userId),
-      ...targetTeamMembers.map(m => m.userId)
+  ...sourceTeamMembers.map((m: any) => m.userId),
+  ...targetTeamMembers.map((m: any) => m.userId)
     ]
 
     // Create notifications for each member
     await Promise.all(
-      allMemberIds.map((memberId) =>
+  allMemberIds.map((memberId: any) =>
         prisma.notification.create({
           data: {
             userId: memberId,

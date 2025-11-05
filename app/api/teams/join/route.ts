@@ -87,7 +87,7 @@ export async function POST(req: Request) {
     })
 
     // Send notifications to all team administrators
-    const notifications = teamAdmins.map(admin => ({
+  const notifications = teamAdmins.map((admin: any) => ({
       userId: admin.user.id,
       type: 'team_join_request',
       payload: {

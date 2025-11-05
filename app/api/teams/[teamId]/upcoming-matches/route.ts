@@ -68,7 +68,7 @@ export async function GET(
 
     // Get availability for each match
     const matchesWithAvailability = await Promise.all(
-      upcomingMatches.map(async (match) => {
+  upcomingMatches.map(async (match: any) => {
         const availability = await prisma.seasonMatchAvailability.findFirst({
           where: {
             seasonMatchId: match.id,

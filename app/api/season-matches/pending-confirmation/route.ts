@@ -28,7 +28,7 @@ export async function GET() {
     }
 
     // Get team IDs where user is admin
-    const adminTeamIds = user.memberships.map(m => m.teamId)
+  const adminTeamIds = user.memberships.map((m: any) => m.teamId)
     console.log('[pending-confirmation] Admin team IDs:', adminTeamIds)
 
     if (adminTeamIds.length === 0) {
@@ -78,15 +78,15 @@ export async function GET() {
 
     // Filter to only submissions where user is admin of the OPPOSING team (not the submitting team)
     const pendingMatches = pendingSubmissions
-      .filter(submission => {
+  .filter((submission: any) => {
         const matchTeamIds = [submission.seasonMatch.homeTeamId, submission.seasonMatch.awayTeamId]
-        const opposingTeamId = matchTeamIds.find(id => id !== submission.submittingTeamId)
+  const opposingTeamId = matchTeamIds.find((id: any) => id !== submission.submittingTeamId)
         const isOpposingAdmin = opposingTeamId && adminTeamIds.includes(opposingTeamId)
         console.log('[pending-confirmation] Submission', submission.id, 'submittingTeam:', submission.submittingTeamId, 'opposingTeam:', opposingTeamId, 'isOpposingAdmin:', isOpposingAdmin)
         return isOpposingAdmin
       })
-      .map(submission => submission.seasonMatch)
-      .sort((a, b) => {
+  .map((submission: any) => submission.seasonMatch)
+  .sort((a: any, b: any) => {
         if (!a.scheduledAt) return 1
         if (!b.scheduledAt) return -1
         return new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime()
