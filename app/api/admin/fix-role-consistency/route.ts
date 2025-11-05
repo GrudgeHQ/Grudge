@@ -84,7 +84,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       message: `Fixed ${inconsistentMembers.length} role inconsistencies`,
       fixed: inconsistentMembers.length,
-      details: inconsistentMembers.map(member => ({
+      details: inconsistentMembers.map((member: any) => ({
         user: member.user?.name || member.user?.email,
         team: member.team?.name,
         role: member.role,
