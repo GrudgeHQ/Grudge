@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { SeasonStatus, SeasonMatchStatus } from '@prisma/client'
 
 // GET /api/leagues/[leagueId]/seasons/[seasonId] - Get season details
 export async function GET(
@@ -110,11 +109,11 @@ export async function GET(
     }
 
     // Check if user has access (league manager or team member)
-    const isLeagueManager = season.league.creatorId === user.id
-    const isMember = season.seasonTeams.some(st => st.team.members.length > 0)
+  const isLeagueManager = season.league.creatorId === user.id
+  const isMember = season.seasonTeams.some((st: { team: { members: any[] } }) => st.team.members.length > 0)
 
     if (!isLeagueManager && !isMember) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 })
+  return NextResponse.json({ error: 'Access denied' }, { status: 403 })
     }
 
     return NextResponse.json({ 
@@ -171,14 +170,14 @@ export async function PUT(
     // Handle different actions
     if (action === 'start') {
       // Start the season
-      if (season.status !== SeasonStatus.DRAFT) {
+      if (season.status !== 'DRAFT') {
         return NextResponse.json({ error: 'Only draft seasons can be started' }, { status: 400 })
       }
 
       const updatedSeason = await prisma.season.update({
         where: { id: seasonId },
         data: {
-          status: SeasonStatus.ACTIVE,
+          status: 'ACTIVE',
           startDate: new Date()
         }
       })
@@ -188,14 +187,14 @@ export async function PUT(
 
     if (action === 'complete') {
       // Complete the season
-      if (season.status !== SeasonStatus.ACTIVE) {
+      if (season.status !== 'ACTIVE') {
         return NextResponse.json({ error: 'Only active seasons can be completed' }, { status: 400 })
       }
 
       const updatedSeason = await prisma.season.update({
         where: { id: seasonId },
         data: {
-          status: SeasonStatus.COMPLETED,
+          status: 'COMPLETED',
           endDate: new Date()
         }
       })
@@ -205,14 +204,14 @@ export async function PUT(
 
     if (action === 'archive') {
       // Archive the season
-      if (season.status !== SeasonStatus.COMPLETED) {
+      if (season.status !== 'COMPLETED') {
         return NextResponse.json({ error: 'Only completed seasons can be archived' }, { status: 400 })
       }
 
       const updatedSeason = await prisma.season.update({
         where: { id: seasonId },
         data: {
-          status: SeasonStatus.ARCHIVED
+          status: 'ARCHIVED'
         }
       })
 
@@ -220,7 +219,7 @@ export async function PUT(
     }
 
     // Regular update (only for draft seasons)
-    if (season.status !== SeasonStatus.DRAFT) {
+    if (season.status !== 'DRAFT') {
       return NextResponse.json({ error: 'Only draft seasons can be edited' }, { status: 400 })
     }
 
@@ -295,7 +294,7 @@ export async function DELETE(
     }
 
     // Allow deletion of any season status, but warn about active seasons
-    if (season.status === SeasonStatus.ACTIVE) {
+    if (season.status === 'ACTIVE') {
       console.log(`Warning: Deleting active season ${seasonId} with potential ongoing matches`)
     }
 
