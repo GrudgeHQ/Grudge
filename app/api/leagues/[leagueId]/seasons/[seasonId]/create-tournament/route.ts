@@ -197,7 +197,7 @@ export async function POST(
 
     // Add teams to tournament based on season standings (seeded by final position)
     const tournamentTeamIds = await Promise.all(
-      topTeams.map(async (standing, index) => {
+  topTeams.map(async (standing: any, index: number) => {
         return (prisma as any).tournamentTeam.create({
           data: {
             tournamentId: tournament.id,
