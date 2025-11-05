@@ -260,7 +260,7 @@ export async function GET(
   }
 
   const isLeagueManager = league.creatorId === user.id
-  const isTeamMember = league.teams.some(lt => lt.team.members.length > 0)
+  const isTeamMember = league.teams.some((lt: any) => lt.team.members.length > 0)
 
   if (!isLeagueManager && !isTeamMember) {
     return NextResponse.json({ error: 'Access denied' }, { status: 403 })
@@ -303,8 +303,8 @@ export async function GET(
   } else {
     // Team members see proposals involving their teams
     const userTeamIds = league.teams
-      .filter(lt => lt.team.members.length > 0)
-      .map(lt => lt.teamId)
+  .filter((lt: any) => lt.team.members.length > 0)
+  .map((lt: any) => lt.teamId)
 
     proposals = await prisma.matchProposal.findMany({
       where: {
