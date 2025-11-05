@@ -33,7 +33,7 @@ export async function GET() {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    const memberships = user.memberships.map(membership => ({
+  const memberships = user.memberships.map((membership: any) => ({
       teamId: membership.teamId,
       isAdmin: membership.isAdmin,
       team: membership.team

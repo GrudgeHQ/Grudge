@@ -86,7 +86,7 @@ export async function GET(
         // Exclude leagues the team is already in
         NOT: {
           id: {
-            in: leagueMemberships.map(lm => lm.league.id)
+            in: leagueMemberships.map((lm: any) => lm.league.id)
           }
         }
       },
@@ -104,17 +104,17 @@ export async function GET(
       isTeamAdmin: teamMembership.isAdmin,
       team: teamMembership.team,
       hasJoinedLeagues: leagueMemberships.length > 0,
-      leagueMemberships: leagueMemberships.map(lm => ({
+  leagueMemberships: leagueMemberships.map((lm: any) => ({
         id: lm.league.id,
         name: lm.league.name,
         sport: lm.league.sport,
         isLeagueManager: lm.league.creatorId === user.id
       })),
-      pendingRequests: pendingJoinRequests.map(pjr => ({
+  pendingRequests: pendingJoinRequests.map((pjr: any) => ({
         id: pjr.id,
         league: pjr.league
       })),
-      suggestedLeagues: availableLeagues.map(al => ({
+  suggestedLeagues: availableLeagues.map((al: any) => ({
         id: al.id,
         name: al.name,
         sport: al.sport,

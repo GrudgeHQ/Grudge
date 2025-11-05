@@ -62,7 +62,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ tournam
     }
 
     // Generate bracket structure
-    const teams: TournamentTeam[] = tournament.teams.map((tt: any) => ({
+  const teams: TournamentTeam[] = tournament.teams.map((tt: any) => ({
       id: tt.id,
       teamId: tt.teamId,
       seed: tt.seed,
@@ -72,7 +72,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ tournam
     const bracketStructure = generateBracket(tournament.format, teams, tournament.randomByes)
 
     // Start database transaction to create rounds and matches
-    const result = await prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx: any) => {
       // Update tournament status
       const updatedTournament = await (tx as any).tournament.update({
         where: { id: tournamentId },

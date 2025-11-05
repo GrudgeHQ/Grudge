@@ -157,9 +157,9 @@ export async function GET() {
     }
 
     // Sort by score (highest first)
-    teamActivities.sort((a, b) => b.score - a.score)
+  teamActivities.sort((a: any, b: any) => b.score - a.score)
 
-    console.log('Team activity scores:', teamActivities.map(t => ({
+  console.log('Team activity scores:', teamActivities.map((t: any) => ({
       name: t.teamName,
       score: t.score,
       factors: t.factors
@@ -170,14 +170,14 @@ export async function GET() {
     
     // If no team has significant activity, default to the first admin team or most recently joined
     if (mostActiveTeam.score === 0) {
-      const adminTeam = user.memberships.find(m => m.isAdmin)
+  const adminTeam = user.memberships.find((m: any) => m.isAdmin)
       if (adminTeam) {
         return NextResponse.json({ teamId: adminTeam.teamId })
       }
       
       // Otherwise most recently joined
       const mostRecentTeam = user.memberships.sort(
-        (a, b) => b.joinedAt.getTime() - a.joinedAt.getTime()
+  (a: any, b: any) => b.joinedAt.getTime() - a.joinedAt.getTime()
       )[0]
       return NextResponse.json({ teamId: mostRecentTeam.teamId })
     }

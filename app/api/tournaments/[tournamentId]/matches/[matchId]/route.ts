@@ -84,7 +84,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ tourname
     const winnerTeam = homeScore > awayScore ? match.homeTeam : match.awayTeam
 
     // Update match with results in a transaction
-    const result = await prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx: any) => {
       // Update match
       const updatedMatch = await (tx as any).tournamentMatch.update({
         where: { id: matchId },
@@ -124,7 +124,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ tourname
         }
       })
 
-      const allMatchesComplete = round.matches.every((m: any) => 
+  const allMatchesComplete = round.matches.every((m: any) => 
         m.id === matchId ? true : m.status === 'COMPLETED'
       )
 
@@ -186,8 +186,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ tourname
 
       // Check if this was the final match
       const finalRound = tournament.rounds
-        .filter((r: any) => r.bracket === 'main')
-        .sort((a: any, b: any) => b.roundNumber - a.roundNumber)[0]
+  .filter((r: any) => r.bracket === 'main')
+  .sort((a: any, b: any) => b.roundNumber - a.roundNumber)[0]
 
       const isFinalMatch = finalRound && finalRound.matches.length === 1 && 
                           finalRound.matches[0].id === matchId

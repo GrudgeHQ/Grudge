@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
 
     // Transform the data to match the expected format
     const teamsData = {
-      teams: user.memberships.map(membership => ({
+  teams: user.memberships.map((membership: any) => ({
         id: membership.id,
         teamId: membership.teamId,
         userId: membership.userId,

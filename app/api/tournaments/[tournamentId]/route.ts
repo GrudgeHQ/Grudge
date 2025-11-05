@@ -93,7 +93,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ tourname
       return NextResponse.json({ error: 'Tournament not found' }, { status: 404 })
     }
 
-    console.log(`[API GET Tournament] Rounds:`, tournament.rounds.map((r: any) => ({
+  console.log(`[API GET Tournament] Rounds:`, tournament.rounds.map((r: any) => ({
       name: r.name,
       number: r.roundNumber,
       matches: r.matches.length
