@@ -2,12 +2,12 @@
   "name": "Grudge - Sports Team Management",
   "short_name": "Grudge",
   "description": "Comprehensive sports team management application for matches, practices, and tournaments",
-  "start_url": "/Grudge/",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#7c3aed",
   "orientation": "portrait-primary",
-  "scope": "/Grudge/",
+  "scope": "/",
   "lang": "en-US",
   "categories": ["sports", "productivity", "social"],
  "icons": [
@@ -466,41 +466,41 @@
       "name": "Dashboard",
       "short_name": "Dashboard",
       "description": "View team dashboard",
-  "url": "/Grudge/dashboard",
+  "url": "/dashboard",
       "icons": [{"src": "icons/icon-144x144.svg", "sizes": "144x144"}]
     },
     {
       "name": "Matches",
       "short_name": "Matches",
       "description": "View upcoming matches",
-  "url": "/Grudge/matches",
+  "url": "/matches",
       "icons": [{"src": "icons/icon-144x144.svg", "sizes": "144x144"}]
     },
     {
       "name": "Chat",
       "short_name": "Chat",
       "description": "Team chat",
-  "url": "/Grudge/chat",
+  "url": "/chat",
       "icons": [{"src": "icons/icon-144x144.svg", "sizes": "144x144"}]
     },
     {
       "name": "Notifications",
       "short_name": "Notifications",
       "description": "View notifications",
-  "url": "/Grudge/notifications",
+  "url": "/notifications",
       "icons": [{"src": "icons/icon-144x144.svg", "sizes": "144x144"}]
     }
   ],
   "prefer_related_applications": false,
     "screenshots": [
       {
-  "src": "/Grudge/screenshots/dashboard.png",
+  "src": "/screenshots/dashboard.png",
         "sizes": "1280x720",
         "type": "image/png",
         "description": "Dashboard view"
       },
       {
-  "src": "/Grudge/screenshots/matches.png",
+  "src": "/screenshots/matches.png",
         "sizes": "1280x720",
         "type": "image/png",
         "description": "Matches list"
@@ -513,11 +513,11 @@
     "protocol_handlers": [
       {
         "protocol": "mailto",
-  "url": "/Grudge/mail-handler?uri=%s"
+  "url": "https://grudge-deploy.vercel.app/mail-handler?uri=%s"
       },
       {
         "protocol": "web+grudge",
-  "url": "/Grudge/protocol-handler?uri=%s"
+  "url": "https://grudge-deploy.vercel.app/protocol-handler?uri=%s"
       }
     ]
 }
