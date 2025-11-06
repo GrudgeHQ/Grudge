@@ -30,7 +30,7 @@ export async function GET() {
     return NextResponse.json({ error: 'User not found' }, { status: 404 })
   }
 
-  const teamIds = user.memberships.map((m) => m.teamId)
+  const teamIds = user.memberships.map((m: typeof user.memberships[number]) => m.teamId)
 
   // Get leagues where user's teams are members
   const leagues = await prisma.league.findMany({
@@ -144,7 +144,7 @@ export async function POST(request: Request) {
   }
 
   // Verify user is admin of the team
-  const membership = user.memberships.find((m) => m.teamId === teamId)
+  const membership = user.memberships.find((m: typeof user.memberships[number]) => m.teamId === teamId)
   if (!membership || !membership.isAdmin) {
     return NextResponse.json({ error: 'You must be an admin to create a league' }, { status: 403 })
   }

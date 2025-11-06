@@ -21,7 +21,7 @@ export async function GET() {
     return NextResponse.json({ error: 'User not found' }, { status: 404 })
   }
 
-  const teamIds = user.memberships.map((tm) => tm.teamId)
+  const teamIds = user.memberships.map((tm: typeof user.memberships[number]) => tm.teamId)
 
   const scrimmages = await prisma.scrimmage.findMany({
     where: {
@@ -81,7 +81,7 @@ export async function POST(request: Request) {
   }
 
   // Verify user is member of this team
-  const membership = user.memberships.find((tm) => tm.teamId === teamId)
+  const membership = user.memberships.find((tm: typeof user.memberships[number]) => tm.teamId === teamId)
   if (!membership) {
     return NextResponse.json({ error: 'You must be a member to create scrimmages' }, { status: 403 })
   }
@@ -97,7 +97,7 @@ export async function POST(request: Request) {
       createdById: user.id,
       settings: linkedGroups && linkedGroups.length > 0 ? { linkedGroups } : undefined,
       participants: {
-        create: participants.map((p: any) => ({
+        create: participants.map((p: { userId: string; userName: string }) => ({
           userId: p.userId,
           userName: p.userName
         }))

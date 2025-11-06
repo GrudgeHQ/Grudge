@@ -125,8 +125,8 @@ export async function GET(req: Request) {
 
     // Transform season matches to match the expected format, filtering out matches without dates
     const transformedSeasonMatches = seasonMatches
-      .filter(sm => sm.scheduledAt !== null) // Only include matches with valid dates
-      .map(sm => ({
+      .filter((sm: typeof seasonMatches[number]) => sm.scheduledAt !== null) // Only include matches with valid dates
+      .map((sm: typeof seasonMatches[number]) => ({
         id: sm.id,
         teamId: sm.homeTeamId === teamId ? sm.homeTeamId : sm.awayTeamId,
         opponentName: sm.homeTeamId === teamId ? sm.awayTeam.name : sm.homeTeam.name,
@@ -171,7 +171,7 @@ export async function GET(req: Request) {
     where: { user: { email: session.user.email } }, 
     include: { team: true } 
   })
-  const teamIds = memberships.map((m) => m.teamId)
+  const teamIds = memberships.map((m: typeof memberships[number]) => m.teamId)
   
   // Get regular matches
   const matches = await prisma.match.findMany({ 
@@ -235,10 +235,10 @@ export async function GET(req: Request) {
 
   // Transform season matches to match the expected format, filtering out matches without dates
   const transformedSeasonMatches = seasonMatches
-    .filter(sm => sm.scheduledAt !== null) // Only include matches with valid dates
-    .map(sm => {
+    .filter((sm: typeof seasonMatches[number]) => sm.scheduledAt !== null) // Only include matches with valid dates
+    .map((sm: typeof seasonMatches[number]) => {
       // Determine which team is "home" for this user
-      const userTeamId = teamIds.find(id => id === sm.homeTeamId || id === sm.awayTeamId)
+  const userTeamId = teamIds.find((id: string) => id === sm.homeTeamId || id === sm.awayTeamId)
       const isHomeTeam = sm.homeTeamId === userTeamId
       
       return {
