@@ -7,12 +7,18 @@ const cluster = process.env.PUSHER_CLUSTER
 
 let pusher: Pusher | null = null
 if (appId && key && secret) {
-  const opts: any = { appId, key, secret, useTLS: true }
-  if (cluster) opts.cluster = cluster
+  // Pusher.Options requires 'host' for HostOptions, but if not using a custom host, use default
+  const opts: Pusher.Options = {
+    appId,
+    key,
+    secret,
+    useTLS: true,
+    host: 'api.pusherapp.com', // default host for Pusher
+  }
   pusher = new Pusher(opts)
 }
 
-export async function trigger(teamId: string | null, event: string, payload: any) {
+async function trigger(teamId: string | null, event: string, payload: Record<string, unknown>) {
   if (!pusher) return
   const privateChannel = teamId ? `private-team-${teamId}` : 'private-global'
   const presenceChannel = teamId ? `presence-team-${teamId}` : 'presence-global'
@@ -26,13 +32,18 @@ export async function trigger(teamId: string | null, event: string, payload: any
   }
 }
 
-export function signSocketAuth(socketId: string, channel: string, userData?: any) {
+function signSocketAuth(socketId: string, channel: string, userData?: Record<string, unknown>) {
   if (!pusher) return null
   // for presence channels, include user info
   if (channel.startsWith('presence-')) {
-    return (pusher as any).authenticate(socketId, channel, userData)
+    // PresenceChannelData requires 'user_id' property
+    const presenceData = userData && typeof userData.user_id === 'string'
+      ? userData as { user_id: string; [key: string]: unknown }
+      : { user_id: 'unknown' }
+    return pusher.authenticate(socketId, channel, presenceData)
   }
-  return (pusher as any).authenticate(socketId, channel)
+  return pusher.authenticate(socketId, channel)
 }
 
+export { trigger, signSocketAuth }
 export default pusher

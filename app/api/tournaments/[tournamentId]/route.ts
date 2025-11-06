@@ -7,7 +7,7 @@ const TOURNAMENT_FORMATS = ['SINGLE_ELIMINATION', 'DOUBLE_ELIMINATION', 'TRIPLE_
 
 export async function GET(req: Request, { params }: { params: Promise<{ tournamentId: string }> }) {
   try {
-    const session = (await getServerSession(authOptions as any)) as any
+  const session = (await getServerSession(authOptions as any)) as { user?: { email?: string } }
     if (!session || !session.user || !session.user.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -93,7 +93,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ tourname
       return NextResponse.json({ error: 'Tournament not found' }, { status: 404 })
     }
 
-  console.log(`[API GET Tournament] Rounds:`, tournament.rounds.map((r: { name: string; roundNumber: number; matches: any[] }) => ({
+  console.log(`[API GET Tournament] Rounds:`, tournament.rounds.map((r: { name: string; roundNumber: number; matches: Array<any> }) => ({
       name: r.name,
       number: r.roundNumber,
       matches: r.matches.length

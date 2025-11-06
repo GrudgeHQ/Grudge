@@ -5,7 +5,7 @@ import { prisma } from '../../../../lib/prisma'
 
 export async function GET(request: NextRequest) {
   try {
-    const session = (await getServerSession(authOptions as any)) as any
+  const session = (await getServerSession(authOptions as any)) as { user?: { email?: string } }
     
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -43,7 +43,27 @@ export async function GET(request: NextRequest) {
 
     // Transform the data to match the expected format
     const teamsData = {
-  teams: user.memberships.map((membership: { id: string; teamId: string; userId: string; role: string; isAdmin: boolean; joinedAt: Date; team: { id: string; name: string; sport: string; inviteCode?: string; members: any[] } }) => ({
+  teams: user.memberships.map((membership: {
+    id: string;
+    teamId: string;
+    userId: string;
+    role: string;
+    isAdmin: boolean;
+    joinedAt: Date;
+    team: {
+      id: string;
+      name: string;
+      sport: string;
+      inviteCode?: string;
+      members: Array<{
+        user: {
+          id: string;
+          name: string | null;
+          email: string | null;
+        };
+      }>;
+    };
+  }) => ({
         id: membership.id,
         teamId: membership.teamId,
         userId: membership.userId,
@@ -55,7 +75,11 @@ export async function GET(request: NextRequest) {
           name: membership.team.name,
           sport: membership.team.sport,
           inviteCode: membership.isAdmin ? membership.team.inviteCode : undefined, // Only show invite code to admins
-          members: membership.team.members
+          members: membership.team.members.map((member: { user: { id: string; name: string | null; email: string | null } }) => ({
+            id: member.user.id,
+            name: member.user.name || "",
+            email: member.user.email || ""
+          }))
         }
       }))
     }

@@ -5,7 +5,7 @@ import { authOptions } from '@/lib/auth'
 
 export async function POST(req: Request, { params }: { params: Promise<{ tournamentId: string }> }) {
   try {
-    const session = (await getServerSession(authOptions as any)) as any
+  const session = (await getServerSession(authOptions as any)) as { user?: { email?: string } }
     if (!session || !session.user || !session.user.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -24,7 +24,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ tournam
     }
 
     // Get tournament to verify permissions
-    const tournament = await (prisma as any).tournament.findUnique({
+  const tournament = await prisma.tournament.findUnique({
       where: { id: tournamentId },
       include: {
         league: {

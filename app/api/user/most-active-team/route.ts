@@ -19,7 +19,7 @@ interface TeamActivity {
 
 export async function GET() {
   try {
-    const session = (await getServerSession(authOptions as any)) as any
+  const session = await getServerSession(authOptions as any) as { user?: { email?: string } }
     if (!session?.user?.email) {
       return NextResponse.json({ teamId: 'all' }) // Default fallback
     }
@@ -57,7 +57,7 @@ export async function GET() {
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
 
     const now = new Date()
-    const teamActivities: TeamActivity[] = []
+  const teamActivities: TeamActivity[] = []
 
     for (const membership of user.memberships) {
       const teamId = membership.teamId
@@ -157,9 +157,9 @@ export async function GET() {
     }
 
     // Sort by score (highest first)
-  teamActivities.sort((a: any, b: any) => b.score - a.score)
+  teamActivities.sort((a: TeamActivity, b: TeamActivity) => b.score - a.score)
 
-  console.log('Team activity scores:', teamActivities.map((t: any) => ({
+  console.log('Team activity scores:', teamActivities.map((t: TeamActivity) => ({
       name: t.teamName,
       score: t.score,
       factors: t.factors
@@ -170,14 +170,14 @@ export async function GET() {
     
     // If no team has significant activity, default to the first admin team or most recently joined
     if (mostActiveTeam.score === 0) {
-  const adminTeam = user.memberships.find((m: any) => m.isAdmin)
+  const adminTeam = user.memberships.find((m: typeof user.memberships[0]) => m.isAdmin)
       if (adminTeam) {
         return NextResponse.json({ teamId: adminTeam.teamId })
       }
       
       // Otherwise most recently joined
       const mostRecentTeam = user.memberships.sort(
-  (a: any, b: any) => b.joinedAt.getTime() - a.joinedAt.getTime()
+        (a: typeof user.memberships[0], b: typeof user.memberships[0]) => b.joinedAt.getTime() - a.joinedAt.getTime()
       )[0]
       return NextResponse.json({ teamId: mostRecentTeam.teamId })
     }
