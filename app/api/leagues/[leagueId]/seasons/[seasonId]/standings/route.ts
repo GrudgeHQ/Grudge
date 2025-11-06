@@ -1,3 +1,17 @@
+type TeamWithMembers = {
+  id: string;
+  name: string;
+  sport: string;
+  members: Array<{
+    id: string;
+    isAdmin: boolean;
+    user: {
+      id: string;
+      name?: string | null;
+      email: string | null | undefined;
+    };
+  }>;
+};
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
@@ -20,7 +34,6 @@ export async function GET(
     const user = await prisma.user.findUnique({
       where: { email: session.user.email }
     })
-
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
@@ -77,7 +90,7 @@ export async function GET(
 
     // Transform to match expected format with team member info
     const transformedStandings = standings.map((standing) => {
-      const teamInfo = teamsWithMembers.find(t => t.id === standing.teamId)
+  const teamInfo = teamsWithMembers.find((t: { id: string; name: string; sport: string; members: Array<{ id: string; isAdmin: boolean; user: { id: string; name: string | null; email: string | null } }> }) => t.id === standing.teamId)
       return {
         teamId: standing.teamId,
         teamName: standing.teamName,
@@ -90,12 +103,12 @@ export async function GET(
         goalDifference: standing.goalDifference,
         points: standing.points,
         winPercentage: standing.played > 0 ? (standing.won / standing.played) * 100 : 0,
-        members: teamInfo?.members.map(member => ({
-          id: member.user.id,
-          name: member.user.name || member.user.email,
-          email: member.user.email,
-          isAdmin: member.isAdmin
-        })) || []
+  members: teamInfo?.members.map((member: { id: string; isAdmin: boolean; user: { id: string; name?: string | null; email: string | null | undefined } }) => ({
+    id: member.user.id,
+    name: member.user.name ?? member.user.email ?? '',
+    email: member.user.email ?? '',
+    isAdmin: member.isAdmin
+  })) || []
       }
     })
 
