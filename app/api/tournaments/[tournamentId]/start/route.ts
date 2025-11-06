@@ -73,7 +73,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ tournam
     const bracketStructure = generateBracket(tournament.format, teams, tournament.randomByes)
 
     // Start database transaction to create rounds and matches
-  const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Update tournament status
       const updatedTournament = await (tx as any).tournament.update({
         where: { id: tournamentId },
