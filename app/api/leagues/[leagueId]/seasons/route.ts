@@ -2,20 +2,23 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { Prisma } from '@prisma/client'
+
+// Manual enum types for Prisma enums
+export type SeasonScheduleType = 'ROUND_ROBIN' | 'FIXED_GAMES';
+export type SeasonMatchStatus = 'SCHEDULED' | 'COMPLETED' | 'POSTPONED' | 'CANCELLED';
 
 // Helper function to generate season matches
 async function generateSeasonMatches(
   seasonId: string,
   teamIds: string[],
-  scheduleType: Prisma.SeasonScheduleType,
+  scheduleType: SeasonScheduleType,
   createdById: string,
   gamesPerOpponent?: number,
   totalGamesPerTeam?: number
 ) {
   const matches = []
 
-  if (scheduleType === Prisma.SeasonScheduleType.ROUND_ROBIN) {
+  if (scheduleType === 'ROUND_ROBIN') {
     // Generate round-robin matches
     const rounds = gamesPerOpponent || 1
     
@@ -26,7 +29,7 @@ async function generateSeasonMatches(
             seasonId,
             homeTeamId: teamIds[i],
             awayTeamId: teamIds[j],
-            status: Prisma.SeasonMatchStatus.SCHEDULED,
+            status: 'SCHEDULED' as SeasonMatchStatus,
             createdById,
             round: round + 1
           })
@@ -37,7 +40,7 @@ async function generateSeasonMatches(
               seasonId,
               homeTeamId: teamIds[j], // Swap home/away for return fixture
               awayTeamId: teamIds[i],
-              status: Prisma.SeasonMatchStatus.SCHEDULED,
+              status: 'SCHEDULED' as SeasonMatchStatus,
               createdById,
               round: round + 1
             })
@@ -45,7 +48,7 @@ async function generateSeasonMatches(
         }
       }
     }
-  } else if (scheduleType === Prisma.SeasonScheduleType.FIXED_GAMES) {
+  } else if (scheduleType === 'FIXED_GAMES') {
     // Generate fixed number of games per team
     const gamesPerTeam = totalGamesPerTeam || 1
     const totalTeams = teamIds.length
@@ -64,7 +67,7 @@ async function generateSeasonMatches(
         seasonId,
         homeTeamId: teamIds[homeIndex],
         awayTeamId: teamIds[awayIndex],
-        status: Prisma.SeasonMatchStatus.SCHEDULED,
+        status: 'SCHEDULED' as SeasonMatchStatus,
         createdById,
         round: Math.floor(game / (totalTeams / 2)) + 1
       })
