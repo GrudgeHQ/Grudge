@@ -118,7 +118,7 @@ export async function DELETE(
 
     // Send notifications to all team administrators
     if (team.members.length > 0) {
-      const notifications = team.members.map(member => ({
+  const notifications = team.members.map((member: { user: { id: string; name?: string | null; email?: string | null } }) => ({
         userId: member.user.id,
         type: 'team_removed_from_league',
         payload: {
@@ -274,21 +274,42 @@ export async function GET(
       }
     })
 
-    const wins = matchStats.filter(match => {
+    const wins = matchStats.filter((match: {
+      id: string
+      scheduledAt: Date | string | null
+      homeTeamId: string
+      awayTeamId: string
+      homeScore: number | null
+      awayScore: number | null
+    }) => {
       if (match.homeScore === null || match.awayScore === null) return false
       if (match.homeTeamId === teamId) return match.homeScore > match.awayScore
       if (match.awayTeamId === teamId) return match.awayScore > match.homeScore
       return false
     }).length
 
-    const losses = matchStats.filter(match => {
+    const losses = matchStats.filter((match: {
+      id: string
+      scheduledAt: Date | string | null
+      homeTeamId: string
+      awayTeamId: string
+      homeScore: number | null
+      awayScore: number | null
+    }) => {
       if (match.homeScore === null || match.awayScore === null) return false
       if (match.homeTeamId === teamId) return match.homeScore < match.awayScore
       if (match.awayTeamId === teamId) return match.awayScore < match.homeScore
       return false
     }).length
 
-    const ties = matchStats.filter(match => {
+    const ties = matchStats.filter((match: {
+      id: string
+      scheduledAt: Date | string | null
+      homeTeamId: string
+      awayTeamId: string
+      homeScore: number | null
+      awayScore: number | null
+    }) => {
       if (match.homeScore === null || match.awayScore === null) return false
       return match.homeScore === match.awayScore
     }).length
@@ -302,8 +323,15 @@ export async function GET(
         wins,
         losses,
         ties,
-        upcomingMatches: matchStats.filter(match => 
-          new Date(match.scheduledAt) > new Date()
+        upcomingMatches: matchStats.filter((match: {
+          id: string
+          scheduledAt: Date | string | null
+          homeTeamId: string
+          awayTeamId: string
+          homeScore: number | null
+          awayScore: number | null
+        }) => 
+          new Date(match.scheduledAt ?? '') > new Date()
         ).length
       },
       isManager: teamInLeague.league.creatorId === user.id
