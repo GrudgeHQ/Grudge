@@ -34,9 +34,9 @@ describe('TeamAdminPanel', () => {
     })
 
     // fetch should be called (DELETE)
-    expect((global as any).fetch).toHaveBeenCalled()
-    const calledUrl = (global as any).fetch.mock.calls[0][0]
-    expect(calledUrl).toContain('/api/teams/t1/members/')
+  expect((global as any).fetch).toHaveBeenCalled()
+  const calledUrl = (global as any).fetch.mock.calls[0][0]
+  expect(calledUrl).toContain('/api/teams/t1/members/')
   })
 
   it('demote flow opens modal and posts', async () => {
@@ -54,8 +54,8 @@ describe('TeamAdminPanel', () => {
       fireEvent.click(screen.getByText('Confirm'))
     })
     expect((global as any).fetch).toHaveBeenCalled()
-  const calledUrl = (global as any).fetch.mock.calls[0][0]
-  expect(calledUrl.includes('/api/teams/t1/members/') || calledUrl.includes('/api/teams/t1/demote')).toBeTruthy()
+    const calledUrl = (global as any).fetch.mock.calls[0][0]
+    expect(calledUrl.includes('/api/teams/t1/members/') || calledUrl.includes('/api/teams/t1/demote')).toBeTruthy()
   })
 
   it('relinquish flow opens modal and posts', async () => {

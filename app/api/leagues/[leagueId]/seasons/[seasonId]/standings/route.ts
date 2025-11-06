@@ -26,7 +26,7 @@ export async function GET(
 ) {
   try {
     const { leagueId, seasonId } = await params;
-    const session = (await getServerSession(authOptions as any)) as any;
+  const session = await getServerSession(authOptions) as { user?: { email?: string } };
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -65,7 +65,7 @@ export async function GET(
 
     const teamsWithMembers: TeamWithMembers[] = await prisma.team.findMany({
       where: {
-        id: { in: standings.map((s: any) => s.teamId) },
+        id: { in: standings.map((s: { teamId: string }) => s.teamId) },
       },
       select: {
         id: true,
@@ -87,7 +87,19 @@ export async function GET(
       },
     });
 
-    const transformedStandings = standings.map((standing: any) => {
+    type Standing = {
+      teamId: string;
+      teamName: string;
+      played: number;
+      won: number;
+      lost: number;
+      drawn: number;
+      goalsFor: number;
+      goalsAgainst: number;
+      goalDifference: number;
+      points: number;
+    };
+    const transformedStandings = standings.map((standing: Standing) => {
       const teamInfo: TeamWithMembers | undefined = teamsWithMembers.find((t: TeamWithMembers) => t.id === standing.teamId);
       return {
         teamId: standing.teamId,

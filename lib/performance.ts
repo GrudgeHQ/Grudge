@@ -151,7 +151,7 @@ export const debounce = <T extends (...args: unknown[]) => unknown>(
   wait: number
 ): T => {
   let timeout: NodeJS.Timeout | null = null;
-  return ((...args: any[]) => {
+  return ((...args: unknown[]) => {
     if (timeout) clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
   }) as T;
@@ -163,7 +163,7 @@ export const throttle = <T extends (...args: unknown[]) => unknown>(
   limit: number
 ): T => {
   let inThrottle: boolean;
-  return ((...args: any[]) => {
+  return ((...args: unknown[]) => {
     if (!inThrottle) {
       func.apply(this, args);
       inThrottle = true;

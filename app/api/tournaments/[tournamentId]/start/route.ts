@@ -8,7 +8,7 @@ import { generateBracket, TournamentTeam } from '@/lib/tournament/brackets'
 
 export async function POST(req: Request, { params }: { params: Promise<{ tournamentId: string }> }) {
   try {
-  const session = await getServerSession(authOptions as any) as { user?: { email?: string } }
+  const session = await getServerSession(authOptions) as { user?: { email?: string } }
     if (!session || !session.user || !session.user.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -85,8 +85,10 @@ export async function POST(req: Request, { params }: { params: Promise<{ tournam
       })
 
       // Create rounds and matches
-  const createdRounds: Array<{ id: string; name: string; roundNumber: number; bracket: string; matches: Array<any> }> = []
-  const allCreatedMatches: Array<Array<{ id: string; homeTeamId: string | null; awayTeamId: string | null; scheduledAt: Date | null }>> = [] // Track all matches by round for linking
+  type CreatedMatch = { id: string; homeTeamId: string | null; awayTeamId: string | null; scheduledAt: Date | null; matchNumber: number; bracket: string; status: string; roundId: string };
+  type CreatedRound = { id: string; name: string; roundNumber: number; bracket: string; matches: CreatedMatch[] };
+  const createdRounds: CreatedRound[] = [];
+  const allCreatedMatches: CreatedMatch[][] = [];
       
       for (const roundData of bracketStructure.rounds) {
         // Create round
@@ -113,15 +115,18 @@ export async function POST(req: Request, { params }: { params: Promise<{ tournam
               awayTeamId: matchData.awayTeamId,
               status: matchData.status
             }
-          })
-          createdMatches.push(match)
+          }) as CreatedMatch;
+          createdMatches.push(match);
         }
 
         allCreatedMatches.push(createdMatches)
         
         createdRounds.push({
-          ...round,
-          matches: createdMatches
+    id: round.id,
+    name: round.name,
+    roundNumber: round.roundNumber,
+    bracket: round.bracket,
+    matches: createdMatches
         })
       }
 
@@ -163,7 +168,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ tournam
       }
     })
   } catch (error) {
-    console.error('Error starting tournament:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  console.error('Error starting tournament:', error)
+  return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

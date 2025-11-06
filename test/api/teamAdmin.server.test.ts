@@ -33,11 +33,11 @@ beforeEach(() => {
 
 describe('Team admin server endpoints', () => {
   it('demote: succeeds when other admins exist', async () => {
-  (getServerSession as unknown as { mockResolvedValue: Function }).mockResolvedValue({ user: { email: 'alice@example.com' } })
-  (prisma.teamMember.findFirst as unknown as { mockResolvedValue: Function }).mockResolvedValue({ id: 'caller', isAdmin: true, userId: 'callerUser' })
-  (prisma.teamMember.findUnique as unknown as { mockResolvedValue: Function }).mockResolvedValue({ id: 'target', teamId: 'team1', isAdmin: true, userId: 'targetUser' })
-  (prisma.teamMember.count as unknown as { mockResolvedValue: Function }).mockResolvedValue(2)
-  (prisma.teamMember.update as unknown as { mockResolvedValue: Function }).mockResolvedValue(true)
+  (getServerSession as any).mockResolvedValue({ user: { email: 'alice@example.com' } })
+  (prisma.teamMember.findFirst as any).mockResolvedValue({ id: 'caller', isAdmin: true, userId: 'callerUser' })
+  (prisma.teamMember.findUnique as any).mockResolvedValue({ id: 'target', teamId: 'team1', isAdmin: true, userId: 'targetUser' })
+  (prisma.teamMember.count as any).mockResolvedValue(2)
+  (prisma.teamMember.update as any).mockResolvedValue(true)
 
     const req = {
       json: async () => ({ userId: 'target' }),

@@ -4,7 +4,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
 export async function GET(req: Request, { params }: { params: Promise<{ leagueId: string }> }) {
-  const session = (await getServerSession(authOptions as any)) as any
+  const session = await getServerSession(authOptions) as { user?: { email?: string } }
   if (!session || !session.user || !session.user.email) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
