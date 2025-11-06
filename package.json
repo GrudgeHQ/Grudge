@@ -1,6 +1,4 @@
 {
-<<<<<<< HEAD
-=======
   "packageManager": "pnpm@8.6.3",
   "name": "grudge-app",
   "version": "0.1.0",
@@ -50,8 +48,7 @@
     "typescript": "^5",
     "vitest": "^1.6.1",
     "webpack-bundle-analyzer": "^4.10.2",
-    "only-allow": "1.2.1"
+    "only-allow": "1.2.1",
     "@netlify/plugin-nextjs": "^5.14.5"
   }
->>>>>>> a9952e59649cd16ce70b0270a2bc4daa221da8b8
 }
