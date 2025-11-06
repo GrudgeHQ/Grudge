@@ -1,9 +1,10 @@
- [build]
-   command = "pnpm run build"
-   publish = "out"
+[build]
+  base = "grudge-app"
+  command = "pnpm run build"
+  publish = ".next"
 
- [build.environment]
-   NEXT_EXPERIMENTAL_TURBOPACK = "false"
+[build.environment]
+  NEXT_EXPERIMENTAL_TURBOPACK = "false"
 
- [[plugins]]
-   package = "@netlify/plugin-nextjs"
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
