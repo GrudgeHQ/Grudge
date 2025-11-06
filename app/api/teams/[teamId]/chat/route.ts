@@ -50,7 +50,7 @@ export async function POST(req: Request, context: any) {
 
   // Create notification for each team member
   await Promise.all(
-  teamMembers.map((member: any) =>
+  teamMembers.map((member: { userId: string }) =>
       prisma.notification.create({
         data: {
           userId: member.userId,

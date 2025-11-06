@@ -77,7 +77,7 @@ export async function POST(
     }
 
     // Verify user is an admin of the opposing team
-  const userTeamIds = user.memberships.filter((m: any) => m.isAdmin).map((m: any) => m.teamId)
+  const userTeamIds = user.memberships.filter((m: { isAdmin: boolean }) => m.isAdmin).map((m: { teamId: string }) => m.teamId)
     const matchTeamIds = [
       scoreSubmission.seasonMatch.homeTeamId,
       scoreSubmission.seasonMatch.awayTeamId

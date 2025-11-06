@@ -118,7 +118,10 @@ export async function DELETE(
 
     // Send notifications to all team administrators
     if (team.members.length > 0) {
-  const notifications = team.members.map((member: { user: { id: string; name?: string | null; email?: string | null } }) => ({
+      const notifications = team.members.map((member: {
+        user: { id: string; name?: string | null; email?: string | null }
+        // Add any other member properties if needed
+      }) => ({
         userId: member.user.id,
         type: 'team_removed_from_league',
         payload: {

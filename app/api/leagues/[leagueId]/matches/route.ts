@@ -49,7 +49,7 @@ export async function GET(
 
   // Check if user is league manager or member of a team in the league
   const isLeagueManager = league.creatorId === user.id
-  const isTeamMember = league.teams.some((lt: any) => lt.team.members.length > 0)
+  const isTeamMember = league.teams.some((lt: { team: { members: unknown[] } }) => lt.team.members.length > 0)
 
   if (!isLeagueManager && !isTeamMember) {
     return NextResponse.json({ error: 'Access denied' }, { status: 403 })
