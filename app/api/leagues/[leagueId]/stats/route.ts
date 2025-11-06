@@ -108,7 +108,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ leagueId
     const teamStats = new Map()
     
     // Initialize stats for all teams in the league
-    league.teams.forEach(({ team }) => {
+    league.teams.forEach(({ team }: { team: { id: string; name: string; members: Array<{ user: { id: string; name: string | null; email: string | null }; isAdmin: boolean }> } }) => {
       teamStats.set(team.id, {
         teamId: team.id,
         teamName: team.name,
