@@ -2,7 +2,10 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { SeasonScheduleType, SeasonStatus, SeasonMatchStatus } from '@prisma/client'
+
+// Manual enum types for Prisma enums
+export type SeasonScheduleType = 'ROUND_ROBIN' | 'FIXED_GAMES';
+export type SeasonMatchStatus = 'SCHEDULED' | 'COMPLETED' | 'POSTPONED' | 'CANCELLED';
 
 // Helper function to generate season matches
 async function generateSeasonMatches(
@@ -15,7 +18,7 @@ async function generateSeasonMatches(
 ) {
   const matches = []
 
-  if (scheduleType === SeasonScheduleType.ROUND_ROBIN) {
+  if (scheduleType === 'ROUND_ROBIN') {
     // Generate round-robin matches
     const rounds = gamesPerOpponent || 1
     
@@ -26,7 +29,7 @@ async function generateSeasonMatches(
             seasonId,
             homeTeamId: teamIds[i],
             awayTeamId: teamIds[j],
-            status: SeasonMatchStatus.SCHEDULED,
+            status: 'SCHEDULED' as SeasonMatchStatus,
             createdById,
             round: round + 1
           })
@@ -37,7 +40,7 @@ async function generateSeasonMatches(
               seasonId,
               homeTeamId: teamIds[j], // Swap home/away for return fixture
               awayTeamId: teamIds[i],
-              status: SeasonMatchStatus.SCHEDULED,
+              status: 'SCHEDULED' as SeasonMatchStatus,
               createdById,
               round: round + 1
             })
@@ -45,7 +48,7 @@ async function generateSeasonMatches(
         }
       }
     }
-  } else if (scheduleType === SeasonScheduleType.FIXED_GAMES) {
+  } else if (scheduleType === 'FIXED_GAMES') {
     // Generate fixed number of games per team
     const gamesPerTeam = totalGamesPerTeam || 1
     const totalTeams = teamIds.length
@@ -64,7 +67,7 @@ async function generateSeasonMatches(
         seasonId,
         homeTeamId: teamIds[homeIndex],
         awayTeamId: teamIds[awayIndex],
-        status: SeasonMatchStatus.SCHEDULED,
+        status: 'SCHEDULED' as SeasonMatchStatus,
         createdById,
         round: Math.floor(game / (totalTeams / 2)) + 1
       })
@@ -152,7 +155,6 @@ export async function GET(
             awayTeamId: true,
             status: true,
             homeScore: true,
-            awayScore: true,
             scheduledAt: true
           }
         },
@@ -164,12 +166,7 @@ export async function GET(
                 name: true
               }
             }
-          },
-          orderBy: [
-            { points: 'desc' },
-            { goalDifference: 'desc' },
-            { goalsFor: 'desc' }
-          ]
+          }
         },
         tournament: {
           select: {
@@ -181,7 +178,6 @@ export async function GET(
         createdBy: {
           select: {
             id: true,
-            name: true,
             email: true
           }
         }
@@ -211,7 +207,7 @@ export async function POST(
   { params }: { params: Promise<{ leagueId: string }> }
 ) {
   try {
-    const { leagueId } = await params
+  const { leagueId } = await params
     const session = (await getServerSession(authOptions as any)) as any
     
     if (!session?.user?.email) {
@@ -272,15 +268,15 @@ export async function POST(
       return NextResponse.json({ error: 'Name and schedule type are required' }, { status: 400 })
     }
 
-    if (!Object.values(SeasonScheduleType).includes(scheduleType)) {
+  if (!['ROUND_ROBIN', 'FIXED_GAMES'].includes(scheduleType)) {
       return NextResponse.json({ error: 'Invalid schedule type' }, { status: 400 })
     }
 
-    if (scheduleType === SeasonScheduleType.ROUND_ROBIN && (!gamesPerOpponent || gamesPerOpponent < 1 || gamesPerOpponent > 10)) {
+  if (scheduleType === 'ROUND_ROBIN' && (!gamesPerOpponent || gamesPerOpponent < 1 || gamesPerOpponent > 10)) {
       return NextResponse.json({ error: 'Games per opponent must be between 1 and 10 for round robin' }, { status: 400 })
     }
 
-    if (scheduleType === SeasonScheduleType.FIXED_GAMES && (!totalGamesPerTeam || totalGamesPerTeam < 1)) {
+  if (scheduleType === 'FIXED_GAMES' && (!totalGamesPerTeam || totalGamesPerTeam < 1)) {
       return NextResponse.json({ error: 'Total games per team must be at least 1 for fixed games' }, { status: 400 })
     }
 
@@ -289,7 +285,7 @@ export async function POST(
     }
 
     // Verify all selected teams are in the league
-    const leagueTeamIds = league.teams.map(lt => lt.team.id)
+  const leagueTeamIds = league.teams.map((lt: { team: { id: string } }) => lt.team.id)
     const invalidTeams = selectedTeams.filter(teamId => !leagueTeamIds.includes(teamId))
     
     if (invalidTeams.length > 0) {
@@ -301,9 +297,9 @@ export async function POST(
       data: {
         name,
         leagueId,
-        scheduleType,
-        gamesPerOpponent: scheduleType === SeasonScheduleType.ROUND_ROBIN ? gamesPerOpponent : null,
-        totalGamesPerTeam: scheduleType === SeasonScheduleType.FIXED_GAMES ? totalGamesPerTeam : null,
+    scheduleType,
+    gamesPerOpponent: scheduleType === 'ROUND_ROBIN' ? gamesPerOpponent : null,
+    totalGamesPerTeam: scheduleType === 'FIXED_GAMES' ? totalGamesPerTeam : null,
         startDate: startDate ? new Date(startDate) : null,
         endDate: endDate ? new Date(endDate) : null,
         hasTournament,
@@ -311,7 +307,7 @@ export async function POST(
         tournamentStartDate: hasTournament && tournamentStartDate ? new Date(tournamentStartDate) : null,
         description,
         rules,
-        status: SeasonStatus.DRAFT,
+  status: 'DRAFT',
         createdById: user.id,
         seasonTeams: {
           create: selectedTeams.map((teamId: string) => ({

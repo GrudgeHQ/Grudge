@@ -10,7 +10,7 @@ export class ErrorBoundary extends React.Component<
   { children: React.ReactNode; fallback?: React.ComponentType<{ error: Error }> },
   { hasError: boolean; error: Error | null }
 > {
-  constructor(props: any) {
+  constructor(props: { children: React.ReactNode; fallback?: React.ComponentType<{ error: Error }> }) {
     super(props)
     this.state = { hasError: false, error: null }
   }
@@ -36,7 +36,7 @@ export class ErrorBoundary extends React.Component<
       url: typeof window !== 'undefined' ? window.location.href : '',
       userAgent: typeof window !== 'undefined' ? navigator.userAgent : '',
       memory: getMemoryUsage(),
-      ...context,
+      ...context as Record<string, unknown>,
     }
 
     // In production, send to error tracking service (Sentry, Bugsnag, etc.)

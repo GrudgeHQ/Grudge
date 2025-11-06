@@ -394,7 +394,13 @@ export function formatScore(scoreFor: number, scoreAgainst: number, sport: strin
 /**
  * Get appropriate win percentage or points display based on sport
  */
-export function getStandingsValue(team: any, sport: string): { value: string | number, label: string } {
+interface StandingsTeam {
+  points?: number;
+  gamesPlayed?: number;
+  wins?: number;
+}
+
+export function getStandingsValue(team: StandingsTeam, sport: string): { value: string | number, label: string } {
   const terminology = getSportTerminology(sport)
   
   if (terminology.pointsSystem) {
@@ -404,8 +410,10 @@ export function getStandingsValue(team: any, sport: string): { value: string | n
     }
   } else {
     // Calculate win percentage for non-points sports
-    const winPercentage = team.gamesPlayed > 0 
-      ? ((team.wins / team.gamesPlayed) * 100).toFixed(1)
+    const gamesPlayed = team.gamesPlayed ?? 0;
+    const wins = team.wins ?? 0;
+    const winPercentage = gamesPlayed > 0 
+      ? ((wins / gamesPlayed) * 100).toFixed(1)
       : '0.0'
     return {
       value: `${winPercentage}%`,

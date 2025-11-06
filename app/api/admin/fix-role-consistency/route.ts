@@ -5,7 +5,7 @@ import prisma from '@/lib/prisma'
 
 // POST /api/admin/fix-role-consistency - Fix team role and admin status consistency
 export async function POST(request: Request) {
-  const session = (await getServerSession(authOptions as any)) as any
+  const session = await getServerSession(authOptions) as { user?: { email?: string } }
 
   if (!session?.user?.email) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -16,10 +16,11 @@ export async function POST(request: Request) {
     const leadershipRoles = ['COACH', 'COORDINATOR', 'CAPTAIN', 'CO_CAPTAIN']
 
     // Find all team members with leadership roles who are not currently admins
+    type Role = 'ADMIN' | 'CAPTAIN' | 'CO_CAPTAIN' | 'COACH' | 'COORDINATOR' | 'MEMBER';
     const inconsistentMembers = await prisma.teamMember.findMany({
       where: {
         role: {
-          in: leadershipRoles as any
+          in: leadershipRoles as Role[]
         },
         isAdmin: false
       },
@@ -49,7 +50,13 @@ export async function POST(request: Request) {
 
     // Update all inconsistent members to have admin access
     const updateResults = await Promise.all(
-      inconsistentMembers.map((member: any) =>
+      inconsistentMembers.map((member: {
+        id: string;
+        user: { id: string; name: string | null; email: string | null };
+        team: { id: string; name: string };
+        role: string;
+        isAdmin: boolean;
+      }) =>
         prisma.teamMember.update({
           where: {
             id: member.id

@@ -4,9 +4,9 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import bcrypt from 'bcryptjs'
 
-export async function POST(req: Request, context: any) {
+export async function POST(req: Request, context: { params?: any }) {
   try {
-    const session = (await getServerSession(authOptions as any)) as any
+  const session = (await getServerSession(authOptions as any)) as { user?: { email?: string } }
     if (!session || !session.user || !session.user.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -82,16 +82,17 @@ export async function POST(req: Request, context: any) {
 
     console.log('Team created successfully:', team.id)
     return NextResponse.json({ ok: true, team })
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error creating team:', error)
     
     // Provide more specific error messages for common issues
-    if (error.code === 'P2002') {
+    const err = error as { code?: string; meta?: { target?: string[] } };
+    if (err.code === 'P2002') {
       // Unique constraint violation
-      if (error.meta?.target?.includes('name')) {
+      if (err.meta?.target?.includes('name')) {
         return NextResponse.json({ error: 'A team with this name already exists' }, { status: 400 })
       }
-      if (error.meta?.target?.includes('inviteCode')) {
+      if (err.meta?.target?.includes('inviteCode')) {
         return NextResponse.json({ error: 'Invite code collision, please try again' }, { status: 500 })
       }
     }

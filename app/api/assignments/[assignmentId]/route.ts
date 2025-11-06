@@ -3,10 +3,11 @@ import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
-export async function DELETE(req: Request, context: any) {
-  const params = context?.params instanceof Promise ? await context.params : context?.params
-  const assignmentId = params?.assignmentId
-  const session = (await getServerSession(authOptions as any)) as any
+type ContextParams = { params?: { assignmentId?: string } };
+export async function DELETE(req: Request, context: { params: Promise<{ assignmentId: string }> }) {
+  const params = await context.params;
+  const assignmentId = params.assignmentId;
+  const session = await getServerSession(authOptions) as { user?: { email?: string } };
   
   if (!session || !session.user || !session.user.email) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -41,7 +42,7 @@ export async function DELETE(req: Request, context: any) {
   // Check if this is a regular match assignment
   if (assignment.match) {
     // Handle regular match assignment deletion
-  const callerMembership = assignment.match.team.members.find((m: { userId: string; isAdmin?: boolean }) => m.userId === caller.id)
+  const callerMembership = assignment.match.team.members.find((m: { userId: string; isAdmin?: boolean }) => m.userId === caller.id);
     if (!callerMembership || !callerMembership.isAdmin) {
       return NextResponse.json({ error: 'Forbidden: Only team admins can remove assignments' }, { status: 403 })
     }

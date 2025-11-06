@@ -146,24 +146,24 @@ export const optimizeQuery = {
 }
 
 // Debounce utility for API calls and search
-export const debounce = <T extends (...args: any[]) => any>(
+export const debounce = <T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): T => {
   let timeout: NodeJS.Timeout | null = null;
-  return ((...args: any[]) => {
+  return ((...args: unknown[]) => {
     if (timeout) clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
   }) as T;
 };
 
 // Throttle utility for scroll events and rapid updates
-export const throttle = <T extends (...args: any[]) => any>(
+export const throttle = <T extends (...args: unknown[]) => unknown>(
   func: T,
   limit: number
 ): T => {
   let inThrottle: boolean;
-  return ((...args: any[]) => {
+  return ((...args: unknown[]) => {
     if (!inThrottle) {
       func.apply(this, args);
       inThrottle = true;
@@ -178,7 +178,10 @@ export const getMemoryUsage = () => {
     return null;
   }
   
-  const memory = (performance as any).memory;
+  const memory = (performance as { memory?: { usedJSHeapSize: number; totalJSHeapSize: number; jsHeapSizeLimit: number } }).memory;
+  if (!memory) {
+    return { used: 0, total: 0, limit: 0 };
+  }
   return {
     used: Math.round(memory.usedJSHeapSize / 1048576), // MB
     total: Math.round(memory.totalJSHeapSize / 1048576), // MB
@@ -208,12 +211,12 @@ export const getConnectionInfo = () => {
     return { effectiveType: '4g', saveData: false };
   }
   
-  const connection = (navigator as any).connection;
+  const connection = (navigator as { connection?: { effectiveType?: string; saveData?: boolean; downlink?: number; rtt?: number } }).connection;
   return {
-    effectiveType: connection.effectiveType || '4g',
-    saveData: connection.saveData || false,
-    downlink: connection.downlink || 10,
-    rtt: connection.rtt || 100,
+    effectiveType: connection?.effectiveType || '4g',
+    saveData: connection?.saveData || false,
+    downlink: connection?.downlink || 10,
+    rtt: connection?.rtt || 100,
   };
 };
 

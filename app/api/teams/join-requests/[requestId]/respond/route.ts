@@ -135,7 +135,7 @@ export async function POST(
       where: {
         type: 'team_join_request',
         payload: {
-          path: 'requestId',
+          path: ['requestId'],
           equals: requestId
         }
       },

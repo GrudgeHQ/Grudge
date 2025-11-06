@@ -59,9 +59,9 @@ export async function POST(
     }
 
     // Verify user is an admin of one of the teams
-  const userAdminTeamIds = user.memberships.map((m: any) => m.teamId)
+  const userAdminTeamIds = user.memberships.map((m: { teamId: string; isAdmin: boolean }) => m.teamId)
     const matchTeamIds = [seasonMatch.homeTeamId, seasonMatch.awayTeamId]
-  const submittingTeamId = matchTeamIds.find((teamId: any) => userAdminTeamIds.includes(teamId))
+  const submittingTeamId = matchTeamIds.find((teamId: string) => userAdminTeamIds.includes(teamId))
 
     if (!submittingTeamId) {
       return NextResponse.json({ 

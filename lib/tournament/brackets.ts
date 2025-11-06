@@ -201,7 +201,7 @@ export function generateSingleElimination(teams: TournamentTeam[], randomByes: b
       const nextMatchIndex = Math.floor(matchIndex / 2)
       // Store nextMatchId as a temporary property (will be set in database after match creation)
       // The start/route.ts will need to link these properly
-      currentRound[matchIndex].nextMatchId = `ROUND_${roundIndex + 2}_MATCH_${nextMatchIndex}` as any
+  currentRound[matchIndex].nextMatchId = `ROUND_${roundIndex + 2}_MATCH_${nextMatchIndex}`
     }
   }
 

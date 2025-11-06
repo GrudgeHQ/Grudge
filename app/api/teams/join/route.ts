@@ -6,7 +6,7 @@ import { authOptions } from '@/lib/auth'
 
 export async function POST(req: Request) {
   try {
-    const session = (await getServerSession(authOptions as any)) as any
+  const session = (await getServerSession(authOptions as any)) as { user?: { email?: string } }
     if (!session || !session.user || !session.user.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -87,7 +87,7 @@ export async function POST(req: Request) {
     })
 
     // Send notifications to all team administrators
-  const notifications = teamAdmins.map((admin: any) => ({
+  const notifications = teamAdmins.map((admin: { user: { id: string; name: string | null; email: string | null } }) => ({
       userId: admin.user.id,
       type: 'team_join_request',
       payload: {
@@ -97,7 +97,7 @@ export async function POST(req: Request) {
         teamId: team.id,
         teamName: team.name,
         requestedById: user.id,
-        requestedByName: user.name || user.email
+        requestedByName: user.name || user.email || ""
       }
     }))
 

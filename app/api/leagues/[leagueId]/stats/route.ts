@@ -5,7 +5,7 @@ import { authOptions } from '@/lib/auth'
 
 export async function GET(req: Request, { params }: { params: Promise<{ leagueId: string }> }) {
   try {
-    const session = (await getServerSession(authOptions as any)) as any
+  const session = await getServerSession(authOptions) as { user?: { email?: string } }
     if (!session || !session.user || !session.user.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -108,7 +108,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ leagueId
     const teamStats = new Map()
     
     // Initialize stats for all teams in the league
-    league.teams.forEach(({ team }) => {
+    league.teams.forEach(({ team }: { team: { id: string; name: string; members: Array<{ user: { id: string; name: string | null; email: string | null }; isAdmin: boolean }> } }) => {
       teamStats.set(team.id, {
         teamId: team.id,
         teamName: team.name,
@@ -121,7 +121,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ leagueId
         goalDifference: 0,
         points: 0, // 3 for win, 1 for draw, 0 for loss
         winPercentage: 0,
-        members: team.members.map(m => ({
+        members: team.members.map((m: { user: { id: string; name: string | null; email: string | null }; isAdmin: boolean }) => ({
           id: m.user.id,
           name: m.user.name,
           email: m.user.email,
@@ -131,13 +131,25 @@ export async function GET(req: Request, { params }: { params: Promise<{ leagueId
     })
 
     // Process regular matches
-    completedMatches.forEach(match => {
+    completedMatches.forEach((match: {
+      team: { id: string; name: string };
+      opponentTeam: { id: string; name: string } | null;
+      homeScore: number | null;
+      awayScore: number | null;
+    }) => {
       const homeTeam = match.team
       const awayTeam = match.opponentTeam
-      const homeScore = match.homeScore!
-      const awayScore = match.awayScore!
+      const homeScore = match.homeScore
+      const awayScore = match.awayScore
 
-      if (homeTeam && awayTeam && teamStats.has(homeTeam.id) && teamStats.has(awayTeam.id)) {
+      if (
+        homeTeam &&
+        awayTeam &&
+        typeof homeScore === 'number' &&
+        typeof awayScore === 'number' &&
+        teamStats.has(homeTeam.id) &&
+        teamStats.has(awayTeam.id)
+      ) {
         const homeStats = teamStats.get(homeTeam.id)
         const awayStats = teamStats.get(awayTeam.id)
 
@@ -170,13 +182,25 @@ export async function GET(req: Request, { params }: { params: Promise<{ leagueId
     })
 
     // Process league matches
-    leagueMatches.forEach(match => {
+    leagueMatches.forEach((match: {
+      id: string;
+      homeTeam: { id: string; name: string };
+      awayTeam: { id: string; name: string };
+      homeScore: number | null;
+      awayScore: number | null;
+      scheduledAt: Date;
+    }) => {
       const homeTeam = match.homeTeam
       const awayTeam = match.awayTeam
-      const homeScore = match.homeScore!
-      const awayScore = match.awayScore!
+      const homeScore = match.homeScore
+      const awayScore = match.awayScore
 
-      if (teamStats.has(homeTeam.id) && teamStats.has(awayTeam.id)) {
+      if (
+        teamStats.has(homeTeam.id) &&
+        teamStats.has(awayTeam.id) &&
+        typeof homeScore === 'number' &&
+        typeof awayScore === 'number'
+      ) {
         const homeStats = teamStats.get(homeTeam.id)
         const awayStats = teamStats.get(awayTeam.id)
 
@@ -228,21 +252,36 @@ export async function GET(req: Request, { params }: { params: Promise<{ leagueId
 
     // Get recent matches (last 10)
     const recentMatches = [
-      ...completedMatches.map(match => ({
+      ...completedMatches.map((match: {
+        id: string;
+        team?: { id: string; name: string };
+        opponentTeam?: { id: string; name: string } | null;
+        opponentName?: string | null;
+        homeScore: number | null;
+        awayScore: number | null;
+        scheduledAt: Date;
+      }) => ({
         id: match.id,
         homeTeam: match.team?.name || 'Unknown',
         awayTeam: match.opponentTeam?.name || match.opponentName || 'Unknown',
-        homeScore: match.homeScore,
-        awayScore: match.awayScore,
+        homeScore: match.homeScore ?? 0,
+        awayScore: match.awayScore ?? 0,
         scheduledAt: match.scheduledAt,
         type: 'regular'
       })),
-      ...leagueMatches.map(match => ({
+      ...leagueMatches.map((match: {
+        id: string;
+        homeTeam: { id: string; name: string };
+        awayTeam: { id: string; name: string };
+        homeScore: number | null;
+        awayScore: number | null;
+        scheduledAt: Date;
+      }) => ({
         id: match.id,
         homeTeam: match.homeTeam.name,
         awayTeam: match.awayTeam.name,
-        homeScore: match.homeScore,
-        awayScore: match.awayScore,
+        homeScore: match.homeScore ?? 0,
+        awayScore: match.awayScore ?? 0,
         scheduledAt: match.scheduledAt,
         type: 'league'
       }))

@@ -33,13 +33,35 @@ beforeEach(() => {
 
 describe('Team admin server endpoints', () => {
   it('demote: succeeds when other admins exist', async () => {
-    ;(getServerSession as any).mockResolvedValue({ user: { email: 'alice@example.com' } })
-    ;(prisma.teamMember.findFirst as any).mockResolvedValue({ id: 'caller', isAdmin: true, userId: 'callerUser' })
-    ;(prisma.teamMember.findUnique as any).mockResolvedValue({ id: 'target', teamId: 'team1', isAdmin: true, userId: 'targetUser' })
-    ;(prisma.teamMember.count as any).mockResolvedValue(2)
-    ;(prisma.teamMember.update as any).mockResolvedValue(true)
+  (getServerSession as any).mockResolvedValue({ user: { email: 'alice@example.com' } })
+  (prisma.teamMember.findFirst as any).mockResolvedValue({ id: 'caller', isAdmin: true, userId: 'callerUser' })
+  (prisma.teamMember.findUnique as any).mockResolvedValue({ id: 'target', teamId: 'team1', isAdmin: true, userId: 'targetUser' })
+  (prisma.teamMember.count as any).mockResolvedValue(2)
+  (prisma.teamMember.update as any).mockResolvedValue(true)
 
-    const req = { json: async () => ({ userId: 'target' }) } as any
+    const req = {
+      json: async () => ({ userId: 'target' }),
+      // Minimal mock for Request interface
+      cache: 'default',
+      credentials: 'same-origin',
+      destination: '',
+      headers: new Headers(),
+      integrity: '',
+      keepalive: false,
+      method: 'POST',
+      mode: 'cors',
+      redirect: 'follow',
+      referrer: '',
+      referrerPolicy: '',
+      url: '',
+      body: null,
+      bodyUsed: false,
+      clone: () => req,
+      arrayBuffer: async () => new ArrayBuffer(0),
+      blob: async () => new Blob(),
+      formData: async () => new FormData(),
+      text: async () => '',
+    } as Request;
     const res = await demoteRoute.POST(req, { params: { teamId: 'team1' } })
 
     // ensure update was called
@@ -49,12 +71,33 @@ describe('Team admin server endpoints', () => {
   })
 
   it('demote: blocked when demoting last admin', async () => {
-    ;(getServerSession as any).mockResolvedValue({ user: { email: 'alice@example.com' } })
-    ;(prisma.teamMember.findFirst as any).mockResolvedValue({ id: 'caller', isAdmin: true, userId: 'callerUser' })
-    ;(prisma.teamMember.findUnique as any).mockResolvedValue({ id: 'target', teamId: 'team1', isAdmin: true, userId: 'targetUser' })
-    ;(prisma.teamMember.count as any).mockResolvedValue(1)
+  (getServerSession as unknown as { mockResolvedValue: Function }).mockResolvedValue({ user: { email: 'alice@example.com' } })
+  (prisma.teamMember.findFirst as unknown as { mockResolvedValue: Function }).mockResolvedValue({ id: 'caller', isAdmin: true, userId: 'callerUser' })
+  (prisma.teamMember.findUnique as unknown as { mockResolvedValue: Function }).mockResolvedValue({ id: 'target', teamId: 'team1', isAdmin: true, userId: 'targetUser' })
+  (prisma.teamMember.count as unknown as { mockResolvedValue: Function }).mockResolvedValue(1)
 
-    const req = { json: async () => ({ userId: 'target' }) } as any
+    const req = {
+      json: async () => ({ userId: 'target' }),
+      cache: 'default',
+      credentials: 'same-origin',
+      destination: '',
+      headers: new Headers(),
+      integrity: '',
+      keepalive: false,
+      method: 'POST',
+      mode: 'cors',
+      redirect: 'follow',
+      referrer: '',
+      referrerPolicy: '',
+      url: '',
+      body: null,
+      bodyUsed: false,
+      clone: () => req,
+      arrayBuffer: async () => new ArrayBuffer(0),
+      blob: async () => new Blob(),
+      formData: async () => new FormData(),
+      text: async () => '',
+    } as Request;
     const res = await demoteRoute.POST(req, { params: { teamId: 'team1' } })
 
     // update should not be called when only one admin exists
@@ -62,22 +105,43 @@ describe('Team admin server endpoints', () => {
   })
 
   it('relinquish: if other admins exist, just relinquish', async () => {
-    ;(getServerSession as any).mockResolvedValue({ user: { email: 'alice@example.com' } })
-    ;(prisma.teamMember.findFirst as any).mockResolvedValue({ 
+    (getServerSession as unknown as { mockResolvedValue: Function }).mockResolvedValue({ user: { email: 'alice@example.com' } })
+    (prisma.teamMember.findFirst as unknown as { mockResolvedValue: Function }).mockResolvedValue({ 
       id: 'caller', 
       isAdmin: true, 
       userId: 'callerUser',
       role: 'MEMBER',
       team: { name: 'Test Team' }
     })
-    ;(prisma.teamMember.findMany as any).mockResolvedValue([
+    (prisma.teamMember.findMany as unknown as { mockResolvedValue: Function }).mockResolvedValue([
       { id: 'other', isAdmin: true, user: { name: 'Other Admin' } }
     ]) // other admins exist
-    ;(prisma.teamMember.update as any).mockResolvedValue(true)
-    ;(prisma.notification.create as any).mockResolvedValue(true)
-    ;(prisma.auditLog.create as any).mockResolvedValue(true)
+    (prisma.teamMember.update as unknown as { mockResolvedValue: Function }).mockResolvedValue(true)
+    (prisma.notification.create as unknown as { mockResolvedValue: Function }).mockResolvedValue(true)
+    (prisma.auditLog.create as unknown as { mockResolvedValue: Function }).mockResolvedValue(true)
 
-    const req = { json: async () => ({}) } as any
+    const req = {
+      json: async () => ({}),
+      cache: 'default',
+      credentials: 'same-origin',
+      destination: '',
+      headers: new Headers(),
+      integrity: '',
+      keepalive: false,
+      method: 'POST',
+      mode: 'cors',
+      redirect: 'follow',
+      referrer: '',
+      referrerPolicy: '',
+      url: '',
+      body: null,
+      bodyUsed: false,
+      clone: () => req,
+      arrayBuffer: async () => new ArrayBuffer(0),
+      blob: async () => new Blob(),
+      formData: async () => new FormData(),
+      text: async () => '',
+    } as Request;
     const res = await relinquishRoute.POST(req, { params: { teamId: 'team1' } })
 
     expect(prisma.teamMember.update).toHaveBeenCalled()
@@ -86,16 +150,16 @@ describe('Team admin server endpoints', () => {
   })
 
   it('relinquish: last admin must transfer', async () => {
-    ;(getServerSession as any).mockResolvedValue({ user: { email: 'alice@example.com' } })
-    ;(prisma.teamMember.findFirst as any).mockResolvedValue({ 
+    (getServerSession as unknown as { mockResolvedValue: Function }).mockResolvedValue({ user: { email: 'alice@example.com' } })
+    (prisma.teamMember.findFirst as unknown as { mockResolvedValue: Function }).mockResolvedValue({ 
       id: 'caller', 
       isAdmin: true, 
       userId: 'callerUser',
       role: 'MEMBER',
       team: { name: 'Test Team' }
     })
-    ;(prisma.teamMember.findMany as any).mockResolvedValue([]) // no other admins
-    ;(prisma.teamMember.findUnique as any).mockResolvedValue({ 
+    (prisma.teamMember.findMany as unknown as { mockResolvedValue: Function }).mockResolvedValue([]) // no other admins
+    (prisma.teamMember.findUnique as unknown as { mockResolvedValue: Function }).mockResolvedValue({ 
       id: 'm2', 
       teamId: 'team1', 
       userId: 'targetUser',

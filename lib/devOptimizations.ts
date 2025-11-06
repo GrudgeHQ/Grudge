@@ -1,12 +1,12 @@
 // Development-specific optimizations
 export const devOptimizations = {
   // Debounce rapid requests
-  debounce: <T extends (...args: any[]) => any>(
+  debounce: <T extends (...args: unknown[]) => unknown>(
     func: T,
     wait: number
   ): T => {
     let timeout: NodeJS.Timeout | null = null;
-    return ((...args: any[]) => {
+    return ((...args: unknown[]) => {
       if (timeout) clearTimeout(timeout);
       timeout = setTimeout(() => func(...args), wait);
     }) as T;

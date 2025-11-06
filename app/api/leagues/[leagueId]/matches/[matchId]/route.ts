@@ -70,8 +70,8 @@ export async function PATCH(
   }
 
   // Verify both teams are in the league
-  const homeTeamInLeague = league.teams.some((t: any) => t.teamId === homeTeamId)
-  const awayTeamInLeague = league.teams.some((t: any) => t.teamId === awayTeamId)
+  const homeTeamInLeague = league.teams.some((t: { teamId: string }) => t.teamId === homeTeamId)
+  const awayTeamInLeague = league.teams.some((t: { teamId: string }) => t.teamId === awayTeamId)
 
   if (!homeTeamInLeague || !awayTeamInLeague) {
     return NextResponse.json({ 

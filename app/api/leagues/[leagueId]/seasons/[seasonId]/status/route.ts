@@ -2,7 +2,12 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { SeasonStatus } from '@prisma/client'
+enum SeasonStatus {
+  DRAFT = "DRAFT",
+  ACTIVE = "ACTIVE",
+  COMPLETED = "COMPLETED",
+  ARCHIVED = "ARCHIVED"
+}
 
 // PUT /api/leagues/[leagueId]/seasons/[seasonId]/status - Update season status
 export async function PUT(
@@ -153,7 +158,7 @@ async function finalizeSeasonStandings(seasonId: string) {
     })
 
     // Update final positions
-    const updatePromises = standings.map((standing, index) =>
+  const updatePromises = standings.map((standing: any, index: number) =>
       prisma.seasonStanding.update({
         where: { id: standing.id },
         data: { position: index + 1 }

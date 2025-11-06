@@ -1,13 +1,18 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+<<<<<<< HEAD
 import type { Prisma } from '@prisma/client';
+=======
+// Removed duplicate import
+import type { Prisma } from '@prisma/client'
+>>>>>>> a9952e59649cd16ce70b0270a2bc4daa221da8b8
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { generateBracket, TournamentTeam } from '@/lib/tournament/brackets'
 
 export async function POST(req: Request, { params }: { params: Promise<{ tournamentId: string }> }) {
   try {
-    const session = (await getServerSession(authOptions as any)) as any
+  const session = await getServerSession(authOptions) as { user?: { email?: string } }
     if (!session || !session.user || !session.user.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -24,7 +29,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ tournam
     }
 
     // Get tournament with teams
-    const tournament = await (prisma as any).tournament.findUnique({
+  const tournament = await prisma.tournament.findUnique({
       where: { id: tournamentId },
       include: {
         league: {
@@ -63,19 +68,23 @@ export async function POST(req: Request, { params }: { params: Promise<{ tournam
     }
 
     // Generate bracket structure
-  const teams: TournamentTeam[] = tournament.teams.map((tt: { id: string; teamId: string; seed: number; team: { id: string; name: string } }) => ({
-      id: tt.id,
-      teamId: tt.teamId,
-      seed: tt.seed,
-      team: tt.team
-    }))
+  const teams: TournamentTeam[] = tournament.teams.map((tt: { id: string; teamId: string; seed: number | null; team: { id: string; name: string } }) => ({
+    id: tt.id,
+    teamId: tt.teamId,
+    seed: tt.seed ?? 0,
+    team: tt.team
+  }))
 
     const bracketStructure = generateBracket(tournament.format, teams, tournament.randomByes)
 
     // Start database transaction to create rounds and matches
-  const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+<<<<<<< HEAD
+    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+=======
+      const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+>>>>>>> a9952e59649cd16ce70b0270a2bc4daa221da8b8
       // Update tournament status
-      const updatedTournament = await (tx as any).tournament.update({
+  const updatedTournament = await tx.tournament.update({
         where: { id: tournamentId },
         data: { 
           status: 'IN_PROGRESS',
@@ -84,12 +93,14 @@ export async function POST(req: Request, { params }: { params: Promise<{ tournam
       })
 
       // Create rounds and matches
-  const createdRounds: any[] = []
-      const allCreatedMatches: any[][] = [] // Track all matches by round for linking
+  type CreatedMatch = { id: string; homeTeamId: string | null; awayTeamId: string | null; scheduledAt: Date | null; matchNumber: number; bracket: string; status: string; roundId: string };
+  type CreatedRound = { id: string; name: string; roundNumber: number; bracket: string; matches: CreatedMatch[] };
+  const createdRounds: CreatedRound[] = [];
+  const allCreatedMatches: CreatedMatch[][] = [];
       
       for (const roundData of bracketStructure.rounds) {
         // Create round
-        const round = await (tx as any).tournamentRound.create({
+  const round = await tx.tournamentRound.create({
           data: {
             tournamentId,
             roundNumber: roundData.roundNumber,
@@ -102,7 +113,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ tournam
         // Create matches for this round
         const createdMatches = []
         for (const matchData of roundData.matches) {
-          const match = await (tx as any).tournamentMatch.create({
+          const match = await tx.tournamentMatch.create({
             data: {
               tournamentId,
               roundId: round.id,
@@ -112,15 +123,18 @@ export async function POST(req: Request, { params }: { params: Promise<{ tournam
               awayTeamId: matchData.awayTeamId,
               status: matchData.status
             }
-          })
-          createdMatches.push(match)
+          }) as CreatedMatch;
+          createdMatches.push(match);
         }
 
         allCreatedMatches.push(createdMatches)
         
         createdRounds.push({
-          ...round,
-          matches: createdMatches
+    id: round.id,
+    name: round.name,
+    roundNumber: round.roundNumber,
+    bracket: round.bracket,
+    matches: createdMatches
         })
       }
 
@@ -139,7 +153,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ tournam
           const nextMatch = nextRoundMatches[nextMatchIndex]
           
           if (nextMatch) {
-            await (tx as any).tournamentMatch.update({
+            await tx.tournamentMatch.update({
               where: { id: currentRoundMatches[matchIndex].id },
               data: { nextMatchId: nextMatch.id }
             })
@@ -162,7 +176,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ tournam
       }
     })
   } catch (error) {
-    console.error('Error starting tournament:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  console.error('Error starting tournament:', error)
+  return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

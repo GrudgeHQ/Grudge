@@ -7,42 +7,43 @@ type TeamWithMembers = {
     isAdmin: boolean;
     user: {
       id: string;
-      name?: string | null;
-      email: string | null | undefined;
+      name: string | null;
+      email: string | null;
     };
   }>;
 };
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
-import { calculateSeasonStandings } from '@/lib/standings'
 
-// GET /api/leagues/[leagueId]/seasons/[seasonId]/standings - Get season standings
+import type { Prisma } from '@prisma/client';
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import { calculateSeasonStandings } from '@/lib/standings';
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ leagueId: string; seasonId: string }> }
 ) {
   try {
-    const { leagueId, seasonId } = await params
-    const session = (await getServerSession(authOptions as any)) as any
-    
+    const { leagueId, seasonId } = await params;
+    const session = await getServerSession(authOptions) as { user?: { email?: string } };
+
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    })
+      where: { email: session.user.email },
+    });
+
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Verify season exists and belongs to the league
     const season = await prisma.season.findFirst({
       where: {
         id: seasonId,
-        leagueId
+        leagueId,
       },
       include: {
         league: {
@@ -50,23 +51,21 @@ export async function GET(
             id: true,
             name: true,
             sport: true,
-            creatorId: true
-          }
-        }
-      }
-    })
+            creatorId: true,
+          },
+        },
+      },
+    });
 
     if (!season) {
-      return NextResponse.json({ error: 'Season not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Season not found' }, { status: 404 });
     }
 
-    // Calculate current standings from completed matches
-    const standings = await calculateSeasonStandings(seasonId)
+    const standings = await calculateSeasonStandings(seasonId);
 
-    // Get team member information for display
-    const teamsWithMembers = await prisma.team.findMany({
+    const teamsWithMembers: TeamWithMembers[] = await prisma.team.findMany({
       where: {
-        id: { in: standings.map(s => s.teamId) }
+        id: { in: standings.map((s: { teamId: string }) => s.teamId) },
       },
       select: {
         id: true,
@@ -80,17 +79,17 @@ export async function GET(
               select: {
                 id: true,
                 name: true,
-                email: true
-              }
-            }
-          }
-        }
-      }
-    })
+                email: true,
+              },
+            },
+          },
+        },
+      },
+    });
 
     // Transform to match expected format with team member info
     const transformedStandings = standings.map((standing) => {
-  const teamInfo = teamsWithMembers.find((t: { id: string; name: string; sport: string; members: Array<{ id: string; isAdmin: boolean; user: { id: string; name: string | null; email: string | null } }> }) => t.id === standing.teamId)
+      const teamInfo = teamsWithMembers.find((t: { id: string; name: string; sport: string; members: Array<{ id: string; isAdmin: boolean; user: { id: string; name: string | null; email: string | null } }> }) => t.id === standing.teamId)
       return {
         teamId: standing.teamId,
         teamName: standing.teamName,
@@ -103,12 +102,12 @@ export async function GET(
         goalDifference: standing.goalDifference,
         points: standing.points,
         winPercentage: standing.played > 0 ? (standing.won / standing.played) * 100 : 0,
-  members: teamInfo?.members.map((member: { id: string; isAdmin: boolean; user: { id: string; name?: string | null; email: string | null | undefined } }) => ({
-    id: member.user.id,
-    name: member.user.name ?? member.user.email ?? '',
-    email: member.user.email ?? '',
-    isAdmin: member.isAdmin
-  })) || []
+        members: teamInfo?.members.map((member: { id: string; isAdmin: boolean; user: { id: string; name?: string | null; email: string | null | undefined } }) => ({
+          id: member.user.id,
+          name: member.user.name ?? member.user.email ?? '',
+          email: member.user.email ?? '',
+          isAdmin: member.isAdmin
+        })) || []
       }
     })
 
@@ -117,13 +116,12 @@ export async function GET(
       season: {
         id: season.id,
         name: season.name,
-        status: season.status
+        status: season.status,
       },
-      league: season.league
-    })
-
+      league: season.league,
+    });
   } catch (error) {
-    console.error('Error fetching season standings:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Error fetching season standings:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
