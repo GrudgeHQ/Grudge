@@ -1,0 +1,9 @@
+ [build]
+   command = "pnpm run build"
+   publish = "out"
+
+ [build.environment]
+   NEXT_EXPERIMENTAL_TURBOPACK = "false"
+
+ [[plugins]]
+   package = "@netlify/plugin-nextjs"
