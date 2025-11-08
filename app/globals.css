@@ -1,7 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* Global styles for Grudge App */
 body {
-  background: #09090b;
-  color: #fff;
   font-family: var(--font-geist-sans, sans-serif);
 }
 
