@@ -54,7 +54,7 @@ export async function calculateSeasonStandings(seasonId: string): Promise<TeamSt
   // Initialize standings for each team
   const standings: { [teamId: string]: TeamStanding } = {}
   
-  seasonTeams.forEach(seasonTeam => {
+  seasonTeams.forEach((seasonTeam: { teamId: string; team: { id: string; name: string } }) => {
     standings[seasonTeam.teamId] = {
       teamId: seasonTeam.teamId,
       teamName: seasonTeam.team.name,
@@ -70,7 +70,7 @@ export async function calculateSeasonStandings(seasonId: string): Promise<TeamSt
   })
 
   // Process each completed match
-  completedMatches.forEach(match => {
+  completedMatches.forEach((match: any) => {
     const homeTeamId = match.homeTeam.id
     const awayTeamId = match.awayTeam.id
     const homeScore = match.homeScore!
