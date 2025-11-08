@@ -146,17 +146,6 @@ export default async function TournamentDetailPage({
   }
 
   console.log('[Tournament Page] Tournament found:', tournament.name)
-  console.log('[Tournament Page] Rounds:', tournament.rounds.map((r: any) => ({
-    name: r.name,
-    number: r.roundNumber,
-    matches: r.matches.length
-  })))
-  tournament.rounds.forEach((round: any) => {
-    console.log(`[Tournament Page] ${round.name} matches:`)
-    round.matches.forEach((m: any) => {
-      console.log(`  - Match ${m.matchNumber}: ${m.homeTeam?.team?.name || 'TBD'} vs ${m.awayTeam?.team?.name || 'TBD'}`)
-    })
-  })
 
   // Check if user is league manager
   const isLeagueManager = tournament.league.creatorId === user.id

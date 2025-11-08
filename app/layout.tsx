@@ -60,7 +60,7 @@ const isDev = process.env.NODE_ENV === 'development'
 }>) {
   let navBar: React.ReactNode = null;
   if (!isDev) {
-    navBar = await NavBar();
+    navBar = <NavBar />;
   }
   return (
     <html lang="en">
