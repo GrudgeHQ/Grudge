@@ -65,9 +65,7 @@ const isDev = process.env.NODE_ENV === 'development'
   }
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-900 text-white`}>
         <ErrorBoundary>
           <AuthProvider>
             <TeamFilterProvider>
