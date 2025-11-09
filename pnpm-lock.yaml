@@ -11,9 +11,6 @@ dependencies:
   '@prisma/client':
     specifier: ^6.19.0
     version: 6.19.0(prisma@6.19.0)(typescript@5.9.3)
-  autoprefixer:
-    specifier: ^10.4.21
-    version: 10.4.21(postcss@8.5.6)
   bcryptjs:
     specifier: ^3.0.2
     version: 3.0.2
@@ -23,9 +20,6 @@ dependencies:
   next-auth:
     specifier: ^4.24.13
     version: 4.24.13(next@16.0.1)(react-dom@18.2.0)(react@18.2.0)
-  postcss:
-    specifier: ^8.5.6
-    version: 8.5.6
   prisma:
     specifier: ^6.19.0
     version: 6.19.0(typescript@5.9.3)
@@ -70,6 +64,9 @@ devDependencies:
   '@types/react-dom':
     specifier: ^18.3.7
     version: 18.3.7(@types/react@18.3.26)
+  autoprefixer:
+    specifier: ^10.4.21
+    version: 10.4.21(postcss@8.5.6)
   eslint:
     specifier: ^9
     version: 9.0.0
@@ -82,6 +79,9 @@ devDependencies:
   only-allow:
     specifier: 1.2.1
     version: 1.2.1
+  postcss:
+    specifier: ^8.5.6
+    version: 8.5.6
   tailwindcss:
     specifier: ^4.1.17
     version: 4.1.17
@@ -2191,7 +2191,7 @@ packages:
       picocolors: 1.1.1
       postcss: 8.5.6
       postcss-value-parser: 4.2.0
-    dev: false
+    dev: true
 
   /available-typed-arrays@1.0.7:
     resolution: {integrity: sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==}
@@ -3303,7 +3303,7 @@ packages:
 
   /fraction.js@4.3.7:
     resolution: {integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==}
-    dev: false
+    dev: true
 
   /fs-extra@11.3.2:
     resolution: {integrity: sha512-Xr9F6z6up6Ws+NjzMCZc6WXg2YFRlrLP9NQDO3VQrWrfiojdhS56TzueT88ze0uBdCTwEIhQ3ptnmKeWGFAe0A==}
@@ -4451,7 +4451,7 @@ packages:
   /normalize-range@0.1.2:
     resolution: {integrity: sha512-bdok/XvKII3nUpklnV6P2hxtMNrCboOjAcyBuQnWEhO665FwrSNRxU+AqpsyvO6LgGYPspN+lu5CLtw4jPRKNA==}
     engines: {node: '>=0.10.0'}
-    dev: false
+    dev: true
 
   /npm-run-path@5.3.0:
     resolution: {integrity: sha512-ppwTtiJZq0O/ai0z7yfudtBpWIoxM8yE6nHi1X47eFR2EWORqfbu6CnPlNsjeN683eT0qG6H/Pyf9fCcvjnnnQ==}
@@ -4747,7 +4747,7 @@ packages:
 
   /postcss-value-parser@4.2.0:
     resolution: {integrity: sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==}
-    dev: false
+    dev: true
 
   /postcss@8.4.31:
     resolution: {integrity: sha512-PS08Iboia9mts/2ygV3eLpY5ghnUcfLV/EXTOW1E2qYxJKGGBUtNjN76FYHnMs36RmARn41bC0AZmn+rR0OVpQ==}
@@ -4765,6 +4765,7 @@ packages:
       nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
+    dev: true
 
   /preact-render-to-string@5.2.6(preact@10.27.2):
     resolution: {integrity: sha512-JyhErpYOvBV1hEPwIxc/fHWXPfnEGdRKxc8gFdAZ7XV4tlzyzG847XAyEZqoDnynP88akM4eaHcSOzNcLWFguw==}

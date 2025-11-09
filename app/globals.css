@@ -1,28 +1,16 @@
-@tailwind base;@tailwind base;
 
-@tailwind components;@tailwind components;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@tailwind utilities;@tailwind utilities;
+/* Global styles for Grudge App */
+body {
+  font-family: var(--font-geist-sans, sans-serif);
+}
 
+html, body, #__next {
+  min-height: 100vh;
+}
 
-
-/* Global styles for Grudge App *//* Global styles for Grudge App */
-
-body {body {
-
-  font-family: var(--font-geist-sans, sans-serif);  font-family: var(--font-geist-sans, sans-serif);
-
-}}
-
-
-
-html, body, #__next {html, body, #__next {
-
-  min-height: 100vh;  min-height: 100vh;
-
-}}
-
-
-
-/* Add any additional global styles here *//* Add any additional global styles here */
+/* Add any additional global styles here */
 
