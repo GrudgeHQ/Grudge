@@ -85,15 +85,6 @@
   "edge_side_panel": {
     "preferred_width": 400
   },
-  "protocol_handlers": [
-    {
-      "protocol": "mailto",
-      "url": "/mail-handler?uri=%s"
-    },
-    {
-      "protocol": "web+grudge",
-      "url": "/protocol-handler?uri=%s"
-    }
-  ],
+  "protocol_handlers": [],
   "display_override": ["standalone", "minimal-ui"]
 }
